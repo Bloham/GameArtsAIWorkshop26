@@ -1,0 +1,39 @@
+# Godot 4 — version control ignores
+
+# Godot's editor cache and imported files (regenerated locally, never commit)
+.godot/
+.import/
+
+# Exported builds and settings that are personal to a machine
+export_presets.cfg
+export.cfg
+build/
+*.exe
+*.dmg
+*.app
+
+# Compiled translations
+*.translation
+
+# Mono / C# (not used in this project, but keeps forks clean)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Operating system noise
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Secrets — never commit these
+.env
+*.key
+*.pem
+secrets.json

@@ -1,0 +1,19 @@
+# Normalise line endings so Windows and macOS contributors don't fight
+* text=auto eol=lf
+
+# Binary assets: never diff or merge them as text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.svg text
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+
+# Godot scenes and resources: text, but merge-unfriendly
+*.tscn text eol=lf
+*.tres text eol=lf
+*.gd text eol=lf

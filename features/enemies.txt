@@ -1,0 +1,14 @@
+# ENEMY FEATURES — one scene path per line
+#
+# Add YOUR enemy scene here when it works. That is all it takes to get it into
+# the game: the game picks a random enemy from this list every spawn.
+#
+# Rules:
+#   - one path per line
+#   - lines starting with # are ignored
+#   - the path must be a .tscn that runs on its own (press F6 on it)
+#
+# Example:
+# res://features/anna-fire-slime/fire_slime.tscn
+#
+# (Nobody has registered an enemy yet, so the game uses the original slime.)

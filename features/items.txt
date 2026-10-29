@@ -1,0 +1,14 @@
+# ITEM FEATURES — one scene path per line
+#
+# Add YOUR item scene here when it works. The game drops a random item from
+# this list every few seconds.
+#
+# Rules:
+#   - one path per line
+#   - lines starting with # are ignored
+#   - the path must be a .tscn that runs on its own (press F6 on it)
+#
+# Example:
+# res://features/tomas-health-pack/health_pack.tscn
+#
+# (Empty means no items spawn.)
