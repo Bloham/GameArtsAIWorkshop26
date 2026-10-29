@@ -1,8 +1,8 @@
 # Story & UI text
 
-The story department works in this file. Fill it in, then tell the coders what
-changed. Keep everything short — this is a two-hour workshop, and every line you
-add has to be typed into the game by someone else.
+Words that appear in the game — the title, HUD labels, game-over text — live
+here. This file is shared by everyone: add your lines at the bottom, don't remove
+anyone else's. Keep it short; someone has to type every line into the game.
 
 ## Game title
 
