@@ -35,6 +35,7 @@ var _points_label: Label
 var _xp_bar: ProgressBar
 var _hud_panel: PanelContainer
 var _weapon_countdown_label: Label
+var _heart_mode_item_timer: Timer
 
 
 func _ready() -> void:
@@ -51,6 +52,20 @@ func _ready() -> void:
 	player_node.connect("progression_changed", Callable(self, "_update_progress_hud"))
 	player_node.connect("level_up", Callable(self, "_animate_level_up_hud"))
 	_update_progress_hud(player_node.get("level"), player_node.get("skill_points"), player_node.get("experience"), player_node.get("xp_to_next"))
+	_heart_mode_item_timer = Timer.new()
+	_heart_mode_item_timer.name = "HeartModeItemTimer"
+	_heart_mode_item_timer.one_shot = true
+	_heart_mode_item_timer.timeout.connect(_on_heart_mode_item_timeout)
+	add_child(_heart_mode_item_timer)
+
+
+func activate_heart_mode_item() -> void:
+	_heart_mode_item_timer.start(20.0)
+	get_node("Player/Gun").activate_heart_mode_from_item()
+
+
+func _on_heart_mode_item_timeout() -> void:
+	get_node("Player/Gun").deactivate_heart_mode_from_item()
 
 
 func _build_weapon_choice() -> void:
@@ -289,8 +304,20 @@ func set_heart_mode(enabled: bool) -> void:
 	$GroundTiles.visible = not enabled
 	$CanvasLayer/HeartModeBackground.visible = enabled
 	$Player/HappyBoo/Colorizer.modulate = PLAYER_HEART_MODE_COLOR if enabled else PLAYER_DEFAULT_COLOR
+	_set_group_sprite_visibility("heart_mode_trees", "PineTree", "HeartModeTree", enabled)
+	_set_group_sprite_visibility("heart_mode_rocks", "RockSprite", "HeartModeRock", enabled)
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		_set_enemy_heart_skin(enemy, enabled)
+
+
+func _set_group_sprite_visibility(group_name: StringName, original_name: String, heart_mode_name: String, enabled: bool) -> void:
+	for prop in get_tree().get_nodes_in_group(group_name):
+		var original_sprite := prop.get_node_or_null(NodePath(original_name)) as CanvasItem
+		var heart_mode_sprite := prop.get_node_or_null(NodePath(heart_mode_name)) as CanvasItem
+		if original_sprite != null:
+			original_sprite.visible = not enabled
+		if heart_mode_sprite != null:
+			heart_mode_sprite.visible = enabled
 
 
 func is_heart_mode_active() -> bool:

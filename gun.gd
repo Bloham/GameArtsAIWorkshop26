@@ -3,7 +3,7 @@ extends Area2D
 enum Weapon { PISTOL, HEART_MODE }
 
 const BULLET := preload("res://bullet_2d.tscn")
-const HEART_BULLET_TEXTURE := preload("res://pistol/heart_bullet.png")
+const HEART_MODE_BULLET_TEXTURE := preload("res://pistol/heart_mode_bullet.png")
 
 var current_weapon: Weapon = Weapon.PISTOL
 var first_wand_shot := true
@@ -37,8 +37,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 	if event.physical_keycode == KEY_1:
 		_set_weapon(Weapon.PISTOL)
-	elif event.physical_keycode == KEY_2:
-		_set_weapon(Weapon.HEART_MODE)
 
 
 func _set_weapon(weapon: Weapon) -> void:
@@ -51,6 +49,15 @@ func _set_weapon(weapon: Weapon) -> void:
 	%Timer.wait_time = 0.353
 	%Timer.start()
 	_sync_music_to_weapon()
+
+
+func activate_heart_mode_from_item() -> void:
+	_set_weapon(Weapon.HEART_MODE)
+
+
+func deactivate_heart_mode_from_item() -> void:
+	if current_weapon == Weapon.HEART_MODE:
+		_set_weapon(Weapon.PISTOL)
 
 
 func _sync_music_to_weapon() -> void:
@@ -72,7 +79,7 @@ func _sync_music_to_weapon() -> void:
 func shoot():
 	var new_bullet = BULLET.instantiate()
 	if current_weapon == Weapon.HEART_MODE:
-		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 1800.0, 1000.0, PI / 2.0, 3, true)
+		new_bullet.configure_projectile(HEART_MODE_BULLET_TEXTURE, 1800.0, 1000.0, PI / 2.0, 3, true)
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	if current_weapon == Weapon.HEART_MODE and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0

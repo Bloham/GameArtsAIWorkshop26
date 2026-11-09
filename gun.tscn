@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bhbi365xsk225" path="res://gun.gd" id="1_sluxj"]
 [ext_resource type="Texture2D" uid="uid://cswb5do8rrj7q" path="res://pistol/pistol.png" id="2_idur6"]
-[ext_resource type="Texture2D" path="res://pistol/heart_wand.png" id="3_heart_wand"]
+[ext_resource type="Texture2D" path="res://pistol/heart_mode_wand.png" id="3_heart_wand"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nthgb"]
 radius = 987.0
@@ -31,6 +31,8 @@ visible = false
 rotation = 1.5708
 scale = Vector2(0.055, 0.055)
 texture = ExtResource("3_heart_wand")
+region_enabled = true
+region_rect = Rect2(780, 830, 1500, 2060)
 
 [node name="ShootingPoint" type="Marker2D" parent="WeaponPivot" unique_id=1993003497]
 unique_name_in_owner = true

@@ -1,6 +1,7 @@
 extends Area2D
 
-const HEART_TEXTURE := preload("res://pistol/heart_bullet.png")
+const HEART_TEXTURE := preload("res://pistol/heart_mode_bullet.png")
+const HEART_REGION := Rect2(1248, 176, 560, 584)
 
 @export var speed: float = 520.0
 @export var damage: float = 8.0
@@ -24,7 +25,9 @@ func set_heart_mode(enabled: bool) -> void:
 		heart = Sprite2D.new()
 		heart.name = "HeartSprite"
 		heart.texture = HEART_TEXTURE
-		heart.scale = Vector2(32, 32) / Vector2(HEART_TEXTURE.get_size())
+		heart.region_enabled = true
+		heart.region_rect = HEART_REGION
+		heart.scale = Vector2(100, 100) / HEART_REGION.size
 		add_child(heart)
 
 
