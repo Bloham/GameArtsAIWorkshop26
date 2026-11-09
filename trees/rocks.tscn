@@ -1,11 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" path="res://trees/rocks.png" id="1_rock_texture"]
+[ext_resource type="Texture2D" path="res://trees/heart_mode_rock.png" id="2_heart_rock"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rock"]
 radius = 160.0
 
-[node name="Rock" type="StaticBody2D"]
+[node name="Rock" type="StaticBody2D" groups=["heart_mode_rocks"]]
 collision_layer = 1
 collision_mask = 1
 
@@ -17,3 +18,9 @@ shape = SubResource("CircleShape2D_rock")
 position = Vector2(0, -230)
 scale = Vector2(1, 1)
 texture = ExtResource("1_rock_texture")
+
+[node name="HeartModeRock" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -230)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_heart_rock")

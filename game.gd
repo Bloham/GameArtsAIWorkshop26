@@ -289,8 +289,20 @@ func set_heart_mode(enabled: bool) -> void:
 	$GroundTiles.visible = not enabled
 	$CanvasLayer/HeartModeBackground.visible = enabled
 	$Player/HappyBoo/Colorizer.modulate = PLAYER_HEART_MODE_COLOR if enabled else PLAYER_DEFAULT_COLOR
+	_set_group_sprite_visibility("heart_mode_trees", "PineTree", "HeartModeTree", enabled)
+	_set_group_sprite_visibility("heart_mode_rocks", "RockSprite", "HeartModeRock", enabled)
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		_set_enemy_heart_skin(enemy, enabled)
+
+
+func _set_group_sprite_visibility(group_name: StringName, original_name: String, heart_mode_name: String, enabled: bool) -> void:
+	for prop in get_tree().get_nodes_in_group(group_name):
+		var original_sprite := prop.get_node_or_null(NodePath(original_name)) as CanvasItem
+		var heart_mode_sprite := prop.get_node_or_null(NodePath(heart_mode_name)) as CanvasItem
+		if original_sprite != null:
+			original_sprite.visible = not enabled
+		if heart_mode_sprite != null:
+			heart_mode_sprite.visible = enabled
 
 
 func is_heart_mode_active() -> bool:

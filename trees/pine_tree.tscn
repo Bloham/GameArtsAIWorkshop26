@@ -2,11 +2,12 @@
 
 [ext_resource type="Texture2D" uid="uid://b7rhtttevhxtj" path="res://characters/ground_shadow.png" id="1_g7t2f"]
 [ext_resource type="Texture2D" uid="uid://caqfk2xng5v5u" path="res://trees/pine_tree.png" id="2_hd1ds"]
+[ext_resource type="Texture2D" path="res://trees/heart_mode_tree.png" id="3_heart_tree"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_im3ph"]
 radius = 22.4571
 
-[node name="PineTree" type="StaticBody2D" unique_id=195003767]
+[node name="PineTree" type="StaticBody2D" groups=["heart_mode_trees"] unique_id=195003767]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=974039017]
 position = Vector2(0, -8)
@@ -23,3 +24,9 @@ texture = ExtResource("1_g7t2f")
 position = Vector2(0, -90)
 scale = Vector2(1.25, 1.25)
 texture = ExtResource("2_hd1ds")
+
+[node name="HeartModeTree" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -90)
+scale = Vector2(0.025, 0.025)
+texture = ExtResource("3_heart_tree")

@@ -5,13 +5,19 @@ extends Area2D
 
 var travelled_distance := 0.0
 var is_heart_mode_projectile := false
+const HEART_MODE_BULLET_REGION := Rect2(1248, 176, 560, 584)
 
 
 func configure_projectile(texture: Texture2D, projectile_speed: float, projectile_range: float, sprite_rotation: float, heart_mode: bool = false) -> void:
 	speed = projectile_speed
 	max_distance = projectile_range
 	$Sprite.texture = texture
-	$Sprite.scale = Vector2(0.2, 0.2)
+	$Sprite.region_enabled = heart_mode
+	if heart_mode:
+		$Sprite.region_rect = HEART_MODE_BULLET_REGION
+		$Sprite.scale = Vector2.ONE * (48.0 / HEART_MODE_BULLET_REGION.size.y)
+	else:
+		$Sprite.scale = Vector2(0.2, 0.2)
 	$Sprite.rotation = sprite_rotation
 	is_heart_mode_projectile = heart_mode
 

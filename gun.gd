@@ -3,7 +3,7 @@ extends Area2D
 enum Weapon { PISTOL, HEART_MODE }
 
 const BULLET := preload("res://bullet_2d.tscn")
-const HEART_BULLET_TEXTURE := preload("res://pistol/heart_bullet.png")
+const HEART_MODE_BULLET_TEXTURE := preload("res://pistol/heart_mode_bullet.png")
 
 var current_weapon: Weapon = Weapon.PISTOL
 var first_wand_shot := true
@@ -72,7 +72,7 @@ func _sync_music_to_weapon() -> void:
 func shoot():
 	var new_bullet = BULLET.instantiate()
 	if current_weapon == Weapon.HEART_MODE:
-		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 1800.0, 1000.0, -PI / 2.0, true)
+		new_bullet.configure_projectile(HEART_MODE_BULLET_TEXTURE, 1800.0, 1000.0, -PI / 2.0, true)
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	if current_weapon == Weapon.HEART_MODE and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0
