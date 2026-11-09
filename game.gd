@@ -264,7 +264,7 @@ func _on_enemy_died(...signal_args) -> void:
 	heart.global_position = enemy.global_position
 	add_child(heart)
 	var tween := heart.create_tween()
-	tween.tween_property(heart, "scale", Vector2(0.07, 0.07), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(heart, "scale", Vector2(0.14, 0.14), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_interval(0.55)
 	tween.tween_property(heart, "modulate:a", 0.0, 0.27)
 	tween.tween_callback(heart.queue_free)
@@ -286,6 +286,10 @@ func set_heart_wand_mode(enabled: bool) -> void:
 	_heart_wand_mode = enabled
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		_set_enemy_heart_skin(enemy, enabled)
+
+
+func is_heart_wand_active() -> bool:
+	return _heart_wand_mode
 
 
 func _set_enemy_heart_skin(enemy: Node, enabled: bool) -> void:
