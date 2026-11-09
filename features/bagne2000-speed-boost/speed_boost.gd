@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var boost_duration: float = 5.0
+@export var boost_duration: float = 3.0
 @export var speed_multiplier: float = 1.75
 
 
