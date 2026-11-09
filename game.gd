@@ -7,6 +7,7 @@ const REPLAY_COUNTDOWN_SECONDS: int = 10
 const WEAPON_CHOICE_SECONDS: float = 5.0
 const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
 const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
+const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 
 var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
@@ -15,6 +16,7 @@ var _replay_seconds_remaining: int = 0
 var _survival_time: float = 0.0
 var _round_kills: int = 0
 var _high_score: int = 0
+var _boss_respawn_pending := false
 const HIGH_SCORE_PATH := "user://highscore.cfg"
 var _level_label: Label
 var _points_label: Label
@@ -193,10 +195,21 @@ func spawn_mob():
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
 	# or the original slime if no student has registered one yet.
-	var scene: PackedScene = FeatureLibrary.random_enemy()
+	var scene: PackedScene
+	if _boss_respawn_pending:
+		scene = load(BOSS_SCENE)
+		_boss_respawn_pending = false
+	else:
+		scene = FeatureLibrary.random_enemy()
 	var new_mob = scene.instantiate()
+	# Keep the yellow boss unique while it is alive.
+	if new_mob.is_in_group("boss") and not get_tree().get_nodes_in_group("boss").is_empty():
+		new_mob.queue_free()
+		return
 	new_mob.global_position = %PathFollow2D.global_position
 	new_mob.tree_exited.connect(_on_enemy_removed)
+	if new_mob.is_in_group("boss"):
+		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
 	if new_mob.has_signal("died"):
 		new_mob.connect("died", Callable(get_node("Player"), "gain_experience"))
@@ -210,6 +223,10 @@ func _on_enemy_removed() -> void:
 		save.set_value("score", "high_score", _high_score)
 		save.save(HIGH_SCORE_PATH)
 	_update_score_display()
+
+
+func _on_boss_removed() -> void:
+	_boss_respawn_pending = true
 
 
 func _update_score_display() -> void:
