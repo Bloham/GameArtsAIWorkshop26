@@ -9,7 +9,7 @@ const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
 const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
-const ENEMY_SPAWN_MARGIN := 64.0
+const SPAWN_MARGIN := 64.0
 
 var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
@@ -208,12 +208,7 @@ func spawn_mob():
 	if new_mob.is_in_group("boss") and not get_tree().get_nodes_in_group("boss").is_empty():
 		new_mob.queue_free()
 		return
-	var spawn_limit := ARENA_HALF_EXTENTS - Vector2.ONE * ENEMY_SPAWN_MARGIN
-	var requested_spawn_position: Vector2 = %PathFollow2D.global_position
-	new_mob.global_position = Vector2(
-		clampf(requested_spawn_position.x, -spawn_limit.x, spawn_limit.x),
-		clampf(requested_spawn_position.y, -spawn_limit.y, spawn_limit.y)
-	)
+	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
 	if new_mob.is_in_group("boss"):
 		new_mob.tree_exited.connect(_on_boss_removed)
@@ -265,8 +260,16 @@ func spawn_item():
 		return
 	%PathFollow2D.progress_ratio = randf()
 	var new_item = scene.instantiate()
-	new_item.global_position = %PathFollow2D.global_position
+	new_item.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	add_child(new_item)
+
+
+func _clamp_to_arena(position: Vector2) -> Vector2:
+	var spawn_limit := ARENA_HALF_EXTENTS - Vector2.ONE * SPAWN_MARGIN
+	return Vector2(
+		clampf(position.x, -spawn_limit.x, spawn_limit.x),
+		clampf(position.y, -spawn_limit.y, spawn_limit.y)
+	)
 
 
 func _on_timer_timeout():
