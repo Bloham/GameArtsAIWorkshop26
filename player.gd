@@ -5,12 +5,20 @@ signal progression_changed(level: int, skill_points: int, xp: int, xp_to_next: i
 signal level_up(level: int)
 
 const MAX_HEALTH := 100.0
+const BASE_SPEED := 600.0
 
 var health = 100.0
 var level := 1
 var skill_points := 0
 var experience := 0
 var xp_to_next := 5
+var _speed_boost_time_remaining := 0.0
+var _speed_multiplier := 1.0
+
+
+func apply_speed_boost(duration: float = 5.0, multiplier: float = 1.75) -> void:
+	_speed_boost_time_remaining = maxf(duration, 0.0)
+	_speed_multiplier = maxf(multiplier, 1.0)
 
 
 func gain_experience(amount: int = 1) -> void:
@@ -77,9 +85,13 @@ func heal(amount: float) -> void:
 
 
 func _physics_process(delta):
-	const SPEED = 600.0
+	if _speed_boost_time_remaining > 0.0:
+		_speed_boost_time_remaining = maxf(_speed_boost_time_remaining - delta, 0.0)
+		if _speed_boost_time_remaining == 0.0:
+			_speed_multiplier = 1.0
+
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	velocity = direction * SPEED
+	velocity = direction * BASE_SPEED * _speed_multiplier
 
 	move_and_slide()
 	
