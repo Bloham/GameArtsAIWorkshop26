@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://trees/rocks.png" id="1_rock_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rock"]
+radius = 160.0
+
+[node name="Rock" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -245)
+shape = SubResource("CircleShape2D_rock")
+
+[node name="RockSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -230)
+scale = Vector2(1, 1)
+texture = ExtResource("1_rock_texture")
