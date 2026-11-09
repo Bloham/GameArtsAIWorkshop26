@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl6sy5ru1xvrt"
-path="res://.godot/imported/emmas_background.png-bc3ac21c4c4fc5077772489ade5a17ff.ctex"
+uid="uid://cdk6fac1yoyum"
+path="res://.godot/imported/heart_health.png-3c44245782acff91826ee6d57407e17b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://emmas_background.png"
-dest_files=["res://.godot/imported/emmas_background.png-bc3ac21c4c4fc5077772489ade5a17ff.ctex"]
+source_file="res://features/heart-health/heart_health.png"
+dest_files=["res://.godot/imported/heart_health.png-3c44245782acff91826ee6d57407e17b.ctex"]
 
 [params]
 
