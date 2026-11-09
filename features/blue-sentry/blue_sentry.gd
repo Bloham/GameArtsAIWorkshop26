@@ -5,9 +5,11 @@ signal died
 const PROJECTILE_SCENE := preload("res://features/blue-sentry/blue_projectile.tscn")
 
 @export var health: int = 4
-@export var shoot_interval: float = 1.7
+@export var shoot_interval: float = 3.0
 @export var projectile_speed: float = 520.0
 @export var projectile_damage: float = 8.0
+
+@onready var _visuals: Node2D = $Visuals
 
 var _player: Node2D
 var _shoot_timer: float = 0.7
@@ -38,6 +40,17 @@ func _shoot_at_player() -> void:
 	projectile.set("speed", projectile_speed)
 	projectile.set("damage", projectile_damage)
 	projectile.call("set_direction", direction)
+	_bounce_on_shot()
+
+
+func _bounce_on_shot() -> void:
+	var tween := create_tween()
+	tween.tween_property(_visuals, "scale", Vector2(1.3, 0.7), 0.08)
+	tween.tween_property(_visuals, "position:y", -14.0, 0.1)
+	tween.parallel().tween_property(_visuals, "scale", Vector2(0.8, 1.25), 0.1)
+	tween.tween_property(_visuals, "position:y", 0.0, 0.16).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(_visuals, "scale", Vector2(1.18, 0.82), 0.16)
+	tween.tween_property(_visuals, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
 func take_damage() -> void:
