@@ -53,10 +53,10 @@ func _bounce_on_shot() -> void:
 	tween.tween_property(_visuals, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
-func take_damage() -> void:
+func take_damage(amount: int = 1) -> void:
 	if _is_dying:
 		return
-	health -= 1
+	health -= amount
 	_flash()
 	if health <= 0:
 		_is_dying = true

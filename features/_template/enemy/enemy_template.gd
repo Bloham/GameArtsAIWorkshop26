@@ -35,8 +35,8 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Called by bullets. Every enemy needs this function.
-func take_damage() -> void:
-	health -= 1
+func take_damage(amount: int = 1) -> void:
+	health -= amount
 	_flash()
 
 	if health <= 0:

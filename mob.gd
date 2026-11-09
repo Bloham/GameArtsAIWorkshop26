@@ -20,9 +20,9 @@ func _physics_process(_delta):
 	move_and_slide()
 
 
-func take_damage():
+func take_damage(amount: int = 1):
 	%Slime.play_hurt()
-	health -= 1
+	health -= amount
 
 	if health <= 0 and not _is_dying:
 		_is_dying = true
