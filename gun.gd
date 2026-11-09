@@ -53,6 +53,15 @@ func _set_weapon(weapon: Weapon) -> void:
 	_sync_music_to_weapon()
 
 
+func activate_heart_mode_from_item() -> void:
+	_set_weapon(Weapon.HEART_MODE)
+
+
+func deactivate_heart_mode_from_item() -> void:
+	if current_weapon == Weapon.HEART_MODE:
+		_set_weapon(Weapon.PISTOL)
+
+
 func _sync_music_to_weapon() -> void:
 	var current_scene := get_tree().current_scene
 	if current_scene == null:
