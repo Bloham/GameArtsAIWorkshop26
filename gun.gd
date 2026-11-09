@@ -50,6 +50,21 @@ func _set_weapon(weapon: Weapon) -> void:
 	%ShootingPoint.position = Vector2(51, -11) if weapon == Weapon.PISTOL else Vector2(50, 0)
 	%Timer.wait_time = 0.353 if weapon == Weapon.PISTOL else 0.55
 	%Timer.start()
+	_sync_music_to_weapon()
+
+
+func _sync_music_to_weapon() -> void:
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		return
+	var music := current_scene.get_node_or_null("BackgroundMusic") as AudioStreamPlayer
+	if music == null:
+		return
+	if current_weapon == Weapon.HEART_WAND:
+		if not music.playing:
+			music.play()
+	else:
+		music.stop()
 
 
 func shoot():
