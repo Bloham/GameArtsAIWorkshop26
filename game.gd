@@ -10,6 +10,7 @@ const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 const GREEN_ENEMY_SCENE := "res://mob.tscn"
 const HEART_WAND_ENEMY_TEXTURE := preload("res://characters/heart_wand_enemy.png")
+const HEART_EFFECT_TEXTURE := preload("res://pistol/heart_bullet.png")
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
 const SPAWN_MARGIN := 64.0
 const BASE_MAX_ENEMIES := 15
@@ -202,7 +203,7 @@ func _animate_level_up_hud(_level: int) -> void:
 
 
 func spawn_mob():
-	if get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
+	if not _heart_wand_mode and get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
 		return
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
@@ -231,6 +232,42 @@ func spawn_mob():
 		_set_enemy_heart_skin(new_mob, true)
 	if new_mob.has_signal("died"):
 		new_mob.connect("died", Callable(get_node("Player"), "gain_experience"))
+		new_mob.connect("died", _on_enemy_died.bind(new_mob))
+
+
+func spawn_heart_hit_effect(enemy: Node2D) -> void:
+	if not _heart_wand_mode:
+		return
+	enemy.set_meta("heart_wand_hit", true)
+	for index in 3:
+		var heart := Sprite2D.new()
+		heart.texture = HEART_EFFECT_TEXTURE
+		heart.scale = Vector2(0.035, 0.035)
+		heart.global_position = enemy.global_position + Vector2((index - 1) * 16.0, -38.0)
+		add_child(heart)
+		var tween := heart.create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(heart, "position:y", heart.position.y - 28.0 - randf_range(0.0, 10.0), 0.55)
+		tween.tween_property(heart, "modulate:a", 0.0, 0.55)
+		tween.chain().tween_callback(heart.queue_free)
+
+
+func _on_enemy_died(...signal_args) -> void:
+	if signal_args.is_empty():
+		return
+	var enemy := signal_args.back() as Node2D
+	if not is_instance_valid(enemy) or not enemy.has_meta("heart_wand_hit"):
+		return
+	var heart := Sprite2D.new()
+	heart.texture = HEART_EFFECT_TEXTURE
+	heart.scale = Vector2(0.0, 0.0)
+	heart.global_position = enemy.global_position
+	add_child(heart)
+	var tween := heart.create_tween()
+	tween.tween_property(heart, "scale", Vector2(0.07, 0.07), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.55)
+	tween.tween_property(heart, "modulate:a", 0.0, 0.27)
+	tween.tween_callback(heart.queue_free)
 
 
 func _random_enemy_scene() -> PackedScene:

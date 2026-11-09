@@ -72,7 +72,7 @@ func _sync_music_to_weapon() -> void:
 func shoot():
 	var new_bullet = BULLET.instantiate()
 	if current_weapon == Weapon.HEART_WAND:
-		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 900.0, 1000.0, -PI / 2.0)
+		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 900.0, 1000.0, -PI / 2.0, true)
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	if current_weapon == Weapon.HEART_WAND and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0
