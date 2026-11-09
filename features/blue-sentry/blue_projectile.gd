@@ -1,10 +1,31 @@
 extends Area2D
 
+const HEART_TEXTURE := preload("res://pistol/heart_bullet.png")
+
 @export var speed: float = 520.0
 @export var damage: float = 8.0
 @export var lifetime: float = 5.0
 
 var _direction := Vector2.ZERO
+
+
+func set_heart_mode(enabled: bool) -> void:
+	var orb := get_node_or_null("Orb") as Polygon2D
+	var heart := get_node_or_null("HeartSprite") as Sprite2D
+	if not enabled:
+		if heart != null:
+			heart.queue_free()
+		if orb != null:
+			orb.visible = true
+		return
+	if orb != null:
+		orb.visible = false
+	if heart == null:
+		heart = Sprite2D.new()
+		heart.name = "HeartSprite"
+		heart.texture = HEART_TEXTURE
+		heart.scale = Vector2(18, 18) / Vector2(HEART_TEXTURE.get_size())
+		add_child(heart)
 
 
 func set_direction(direction: Vector2) -> void:
