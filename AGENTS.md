@@ -1,94 +1,62 @@
 # Agent Instructions
 
 You are working in a **Godot 4.7** 2D top-down survival shooter written in
-**GDScript**, in a university course where the person prompting you is a **Game
-Arts student**, not a programmer. They may never have used git or an engine
-before.
+**GDScript**, in a Game Arts course at Novia. The person prompting you is a
+**student**, not a programmer — they may be new to Godot and new to git.
 
-Your job is not only to make the change. It is to make the change **and** leave
-the student able to explain what happened.
+`PROJECT_OVERVIEW.md` describes the scenes, scripts and collision layers. Read it
+when you need to know how a piece connects.
 
-## Read this first
+## How to work
 
-- **`PROJECT_OVERVIEW.md`** — scene hierarchy, scripts, collision layers, the feature system. Read it before touching anything.
-- **`features/README.md`** — the workflow the student is following.
+The student decides what to build. You make it happen.
 
-## The shape of the work
+- Change whatever the request actually requires — one file or twenty. There is
+  no fixed folder, no fixed order, no prescribed workflow.
+- Anything in this project is fair game if the student asks for it. If a change
+  touches shared code, say so in one sentence so they know what to test.
+- Keep the project runnable. If you cannot verify that it runs, say so plainly
+  instead of claiming success.
+- Explain in a sentence or two what you changed and where.
+- Prefer the smallest change that gives a visible result. Visible wins in a
+  classroom.
 
-The student owns **exactly one feature** — one enemy or one item — in **one
-folder**:
+## Git: pull, commit and push after every change
+
+Everyone in the room shares this repository, live. After each completed change:
 
 ```
-res://features/<studentname>-<featurename>/
+git pull --rebase
+git add -A
+git commit -m "short description of what changed"
+git push
 ```
 
-Copied from `features/_template/enemy/` or `features/_template/item/`.
-Everything they need to change is inside their own folder.
+Before you start a change, `git pull --rebase` first.
 
-**Stay inside their feature folder.** The rest of the project is shared wiring
-that nineteen other students depend on.
+If the push is rejected: `git pull --rebase`, then push again. Never use
+`--force`, never rewrite pushed history. If a conflict cannot be resolved
+cleanly, stop and tell the student which files conflict — do not guess at
+someone else's work.
 
-## Ground rules
+Commit messages are one line, in the present tense, describing the change.
 
-1. **One request at a time.** Small, working changes. A feature that runs beats
-   an ambitious one that half-works.
-2. **Never edit the shared wiring** — `game.gd`, `player.gd`, `gun.gd`,
-   `bullet_2d.gd`, `features/library.gd`, or any `.tscn` outside their folder —
-   unless the student explicitly asks and you explain the consequence.
-3. **Registration is one line** in `features/enemies.txt` or
-   `features/items.txt`. Ask the student to add it themselves: it is their finish
-   line, and it teaches where the boundary is.
-4. **Never touch `.godot/`.** Local editor cache, not source.
-5. **Keep the project runnable.** If you cannot verify that it runs, say so
-   plainly instead of claiming success.
-6. **Don't rename scenes, nodes or files** unless asked — it breaks `res://`
-   paths. If it is genuinely needed, update every reference in the same change.
-7. **Explain in two or three sentences** what you changed and where. Enough for a
-   beginner to follow, not a wall of text.
+Never commit `export_presets.cfg`, `.godot/`, or anything containing a password,
+token or key.
 
-## What a feature must keep true
+## Facts about this project
 
-The game relies on these. A feature that breaks them will not work when it spawns
-in the real game, even if it looks fine alone.
+- **Enemies** are `CharacterBody2D` on collision layer 2. Bullets call
+  `take_damage()`. They chase the player via
+  `get_tree().get_first_node_in_group("player")`.
+- **Items** are `Area2D` with `collision_layer = 0` and `collision_mask = 1`. On
+  `body_entered` they check `is_in_group("player")`, apply their effect, then
+  `queue_free()`.
+- **Registering** a new enemy or item is one line in `features/enemies.txt` or
+  `features/items.txt` — a `res://` path per line.
+- **Art and sound** live next to the scene that uses them. Godot imports new
+  PNGs on its own; if a texture does not appear, that is a reimport issue, not a
+  code fix.
+- `.godot/` is a local editor cache, not source.
 
-**Enemy** (`CharacterBody2D`):
-- `collision_layer = 2` — bullets hit it, touching it hurts the player
-- has a `take_damage()` function — that is what bullets call
-- chases the player via `get_tree().get_first_node_in_group("player")`
-
-**Item** (`Area2D`):
-- `collision_layer = 0`, `collision_mask = 1`
-- on `body_entered`, checks `body.is_in_group("player")`, does something, then `queue_free()`
-- may call `body.heal(amount)` on the player
-
-Assets live in the feature folder: `art/` for PNGs (and the `.kra` working file),
-`sound/` for `.wav`/`.ogg`. Godot imports new PNGs itself; if a texture does not
-appear, the editor needs a reimport — say that instead of inventing a code fix.
-
-## Teaching, not just editing
-
-- Name the file you changed and the node it belongs to.
-- When you fix a mistake, say what the mistake was — that is the lesson.
-- If the student asks for something that will take longer than they think, say so
-  before doing it.
-- If a request would break another student's feature, refuse and explain why.
-- Prefer the smallest change that produces a visible result. Visible wins in a
-  course like this.
-
-## Requests you will get
-
-- "Make it faster / slower / bigger" — tune exported values.
-- "Use my drawing" — assign the PNG to the Sprite2D texture.
-- "It should shoot back" — add a projectile scene inside their folder.
-- "It should drop something when it dies" — spawn a small scene from their folder.
-- "Make it glow / flash / spin" — modulate, tween, scale.
-- "Add the sound" — assign `death_sound` / `pickup_sound`.
-- "My item should give speed instead of health" — change the pick-up behaviour.
-
-## What to avoid
-
-- Adding plugins, packages or external dependencies.
-- Rewriting the architecture "properly" — the project's shape is the lesson.
-- Editing another student's feature folder.
-- Multi-file refactors when a one-line change would do.
-- Committing `export_presets.cfg`, `.godot/`, or any credential.
+That is the whole brief. Build what the student asks for.
