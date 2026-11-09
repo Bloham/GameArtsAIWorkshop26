@@ -23,11 +23,6 @@ func shoot():
 	var new_bullet = BULLET.instantiate()
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	%ShootingPoint.add_child(new_bullet)
-	# At point-blank range the muzzle can be past the target, so start the
-	# bullet inside the player's position where an overlapping enemy can be hit.
-	const POINT_BLANK_DISTANCE := 160.0
-	if global_position.distance_to(get_global_mouse_position()) <= POINT_BLANK_DISTANCE:
-		new_bullet.global_position = global_position
 
 
 func _on_timer_timeout() -> void:
