@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dvvqhwu0nrji"]
+
+[ext_resource type="Script" uid="uid://bc55uhrbwixnn" path="res://multiplayer_menu.gd" id="1_gldl5"]
+
+[node name="Control" type="Control" unique_id=82462771]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gldl5")
+
+[node name="MenuItems" type="VBoxContainer" parent="." unique_id=1271323457]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HostButton" type="Button" parent="MenuItems" unique_id=859948718]
+layout_mode = 2
+text = "Create_Game"
+
+[node name="JoinButton" type="Button" parent="MenuItems" unique_id=6891500]
+layout_mode = 2
+text = "Join
+"
+
+[node name="AddressInput" type="LineEdit" parent="MenuItems" unique_id=1173352061]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="MenuItems" unique_id=1732276699]
+unique_name_in_owner = true
+layout_mode = 2
+
+[connection signal="pressed" from="MenuItems/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="MenuItems/JoinButton" to="." method="_on_join_button_pressed"]
