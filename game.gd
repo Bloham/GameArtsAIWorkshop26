@@ -12,6 +12,7 @@ var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
 var _weapon_choice_open := true
 var _replay_seconds_remaining: int = 0
+var _survival_time: float = 0.0
 var _round_kills: int = 0
 var _high_score: int = 0
 const HIGH_SCORE_PATH := "user://highscore.cfg"
@@ -120,6 +121,8 @@ func _on_weapon_chosen(texture_path: String) -> void:
 	if not _weapon_choice_open:
 		return
 	_weapon_choice_open = false
+	_survival_time = 0.0
+	%SurvivalTimeLabel.text = "Time survived: 00:00"
 	get_node("Player/Gun").set_weapon_texture(texture_path)
 	get_node("WeaponChoice").queue_free()
 	get_node("Player").set_physics_process(true)
@@ -219,6 +222,10 @@ func _process(delta: float) -> void:
 		_update_weapon_countdown()
 		if _weapon_seconds_remaining <= 0.0:
 			_on_weapon_chosen(DEFAULT_WEAPON_TEXTURE)
+		return
+
+	_survival_time += delta
+	%SurvivalTimeLabel.text = "Time survived: %s" % _format_survival_time()
 	if item_interval <= 0.0 or FeatureLibrary.items.is_empty():
 		return
 
@@ -243,6 +250,7 @@ func _on_timer_timeout():
 
 
 func _on_player_health_depleted():
+	%FinalTimeLabel.text = "Time survived: %s" % _format_survival_time()
 	%GameOver.show()
 	get_tree().paused = true
 	_replay_seconds_remaining = REPLAY_COUNTDOWN_SECONDS
@@ -271,3 +279,10 @@ func _restart_game() -> void:
 	%ReplayCountdown.stop()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+func _format_survival_time() -> String:
+	var total_seconds := int(_survival_time)
+	var minutes := int(total_seconds / 60)
+	var seconds := total_seconds % 60
+	return "%02d:%02d" % [minutes, seconds]

@@ -10,6 +10,22 @@ _data = {
 }
 point_count = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_SurvivalTimer"]
+bg_color = Color(0.04, 0.05, 0.08, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.9, 1, 0.55)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+
 [node name="Game" type="Node2D" unique_id=327747119]
 y_sort_enabled = true
 script = ExtResource("1_qclsr")
@@ -52,13 +68,32 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -358.0
-offset_top = -107.0
+offset_top = -170.0
 offset_right = 358.0
-offset_bottom = 107.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 124
 text = "Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FinalTimeLabel" type="Label" parent="GameOver/ColorRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = 0.0
+offset_right = 400.0
+offset_bottom = 76.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 48
+text = "Time survived: 00:00"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -98,6 +133,22 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 text = "Round Kills: 0\nHigh Score: 0"
 horizontal_alignment = 2
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="SurvivalTimer" type="PanelContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 360.0
+offset_bottom = 82.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_SurvivalTimer")
+
+[node name="SurvivalTimeLabel" type="Label" parent="HUD/SurvivalTimer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Time survived: 00:00"
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1066809076]
