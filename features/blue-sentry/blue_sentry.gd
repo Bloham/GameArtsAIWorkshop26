@@ -41,8 +41,8 @@ func _shoot_at_player() -> void:
 	projectile.set("damage", projectile_damage)
 	projectile.call("set_direction", direction)
 	var current_scene := get_tree().current_scene
-	if current_scene != null and current_scene.has_method("is_heart_wand_active"):
-		projectile.call("set_heart_mode", current_scene.call("is_heart_wand_active"))
+	if current_scene != null and current_scene.has_method("is_heart_mode_active"):
+		projectile.call("set_heart_mode", current_scene.call("is_heart_mode_active"))
 	_bounce_on_shot()
 
 

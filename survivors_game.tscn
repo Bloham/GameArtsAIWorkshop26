@@ -38,6 +38,12 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="Shader" id="Shader_HeartModeRainbow"]
+code = "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat hue = fract(UV.x + UV.y * 0.18);\n\tCOLOR = vec4(hsv_to_rgb(vec3(hue, 0.9, 0.9)), 1.0);\n}\n"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_HeartModeRainbow"]
+shader = SubResource("Shader_HeartModeRainbow")
+
 [node name="Game" type="Node2D" unique_id=327747119]
 y_sort_enabled = true
 script = ExtResource("1_qclsr")
@@ -214,6 +220,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.28, 0.34, 0.19, 1)
+
+[node name="HeartModeRainbow" type="ColorRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_HeartModeRainbow")
 
 [node name="PineTree" parent="." unique_id=1536469701 instance=ExtResource("3_6h7ij")]
 position = Vector2(66, 591)

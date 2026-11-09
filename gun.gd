@@ -1,6 +1,6 @@
 extends Area2D
 
-enum Weapon { PISTOL, HEART_WAND }
+enum Weapon { PISTOL, HEART_MODE }
 
 const BULLET := preload("res://bullet_2d.tscn")
 const HEART_BULLET_TEXTURE := preload("res://pistol/heart_bullet.png")
@@ -38,15 +38,15 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.physical_keycode == KEY_1:
 		_set_weapon(Weapon.PISTOL)
 	elif event.physical_keycode == KEY_2:
-		_set_weapon(Weapon.HEART_WAND)
+		_set_weapon(Weapon.HEART_MODE)
 
 
 func _set_weapon(weapon: Weapon) -> void:
 	current_weapon = weapon
-	if weapon == Weapon.HEART_WAND:
+	if weapon == Weapon.HEART_MODE:
 		first_wand_shot = true
 	%Pistol.visible = weapon == Weapon.PISTOL
-	%HeartWand.visible = weapon == Weapon.HEART_WAND
+	%HeartWand.visible = weapon == Weapon.HEART_MODE
 	%ShootingPoint.position = Vector2(51, -11) if weapon == Weapon.PISTOL else Vector2(50, 0)
 	%Timer.wait_time = 0.353
 	%Timer.start()
@@ -57,12 +57,12 @@ func _sync_music_to_weapon() -> void:
 	var current_scene := get_tree().current_scene
 	if current_scene == null:
 		return
-	if current_scene.has_method("set_heart_wand_mode"):
-		current_scene.call("set_heart_wand_mode", current_weapon == Weapon.HEART_WAND)
+	if current_scene.has_method("set_heart_mode"):
+		current_scene.call("set_heart_mode", current_weapon == Weapon.HEART_MODE)
 	var music := current_scene.get_node_or_null("BackgroundMusic") as AudioStreamPlayer
 	if music == null:
 		return
-	if current_weapon == Weapon.HEART_WAND:
+	if current_weapon == Weapon.HEART_MODE:
 		if not music.playing:
 			music.play()
 	else:
@@ -71,10 +71,10 @@ func _sync_music_to_weapon() -> void:
 
 func shoot():
 	var new_bullet = BULLET.instantiate()
-	if current_weapon == Weapon.HEART_WAND:
+	if current_weapon == Weapon.HEART_MODE:
 		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 900.0, 1000.0, PI / 2.0, 3, true)
 	new_bullet.global_transform = %ShootingPoint.global_transform
-	if current_weapon == Weapon.HEART_WAND and first_wand_shot:
+	if current_weapon == Weapon.HEART_MODE and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0
 		first_wand_shot = false
 	%ShootingPoint.add_child(new_bullet)
