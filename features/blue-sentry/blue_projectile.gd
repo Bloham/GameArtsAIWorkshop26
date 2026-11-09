@@ -27,7 +27,7 @@ func set_heart_mode(enabled: bool) -> void:
 		heart.texture = HEART_TEXTURE
 		heart.region_enabled = true
 		heart.region_rect = HEART_REGION
-		heart.scale = Vector2(32, 32) / HEART_REGION.size
+		heart.scale = Vector2(132, 132) / HEART_REGION.size
 		add_child(heart)
 
 
