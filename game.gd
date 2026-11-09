@@ -10,7 +10,8 @@ const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
 const SPAWN_MARGIN := 64.0
-const MAX_ENEMIES := 15
+const BASE_MAX_ENEMIES := 15
+const ENEMIES_PER_LEVEL := 10
 
 var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
@@ -20,6 +21,8 @@ var _survival_time: float = 0.0
 var _round_kills: int = 0
 var _high_score: int = 0
 var _boss_respawn_pending := false
+var _boss_active := false
+var _max_enemies: int = BASE_MAX_ENEMIES
 const HIGH_SCORE_PATH := "user://highscore.cfg"
 var _level_label: Label
 var _points_label: Label
@@ -180,6 +183,7 @@ func _make_bar_style(color: Color) -> StyleBoxFlat:
 
 
 func _update_progress_hud(level: int, points: int, xp: int, needed: int) -> void:
+	_max_enemies = BASE_MAX_ENEMIES + (level - 1) * ENEMIES_PER_LEVEL
 	_level_label.text = "✦  LEVEL %02d" % level
 	_points_label.text = "SKILL POINTS: %d" % points
 	_xp_bar.max_value = needed
@@ -195,26 +199,29 @@ func _animate_level_up_hud(_level: int) -> void:
 
 
 func spawn_mob():
-	if get_tree().get_nodes_in_group("enemies").size() >= MAX_ENEMIES:
+	if get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
 		return
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
 	# or the original slime if no student has registered one yet.
 	var scene: PackedScene
 	if _boss_respawn_pending:
+		if _boss_active or not get_tree().get_nodes_in_group("boss").is_empty():
+			return
 		scene = load(BOSS_SCENE)
-		_boss_respawn_pending = false
 	else:
 		scene = FeatureLibrary.random_enemy()
 	var new_mob = scene.instantiate()
-	# Keep the yellow boss unique while it is alive.
-	if new_mob.is_in_group("boss") and not get_tree().get_nodes_in_group("boss").is_empty():
-		new_mob.queue_free()
+	var is_boss: bool = new_mob.is_in_group("boss")
+	if is_boss and (_boss_active or not get_tree().get_nodes_in_group("boss").is_empty()):
+		new_mob.free()
 		return
 	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
 	new_mob.add_to_group("enemies")
-	if new_mob.is_in_group("boss"):
+	if is_boss:
+		_boss_active = true
+		_boss_respawn_pending = false
 		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
 	if new_mob.has_signal("died"):
@@ -232,6 +239,7 @@ func _on_enemy_removed() -> void:
 
 
 func _on_boss_removed() -> void:
+	_boss_active = false
 	_boss_respawn_pending = true
 
 
