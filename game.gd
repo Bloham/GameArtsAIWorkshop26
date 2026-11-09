@@ -11,6 +11,8 @@ const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 const GREEN_ENEMY_SCENE := "res://mob.tscn"
 const HEART_MODE_ENEMY_TEXTURE := preload("res://characters/heart_wand_enemy.png")
 const HEART_EFFECT_TEXTURE := preload("res://pistol/heart_bullet.png")
+const PLAYER_DEFAULT_COLOR := Color(1.0, 0.572549, 0.176471)
+const PLAYER_HEART_MODE_COLOR := Color(1.0, 0.38, 0.72)
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
 const SPAWN_MARGIN := 64.0
 const BASE_MAX_ENEMIES := 15
@@ -285,7 +287,8 @@ func _random_enemy_scene() -> PackedScene:
 func set_heart_mode(enabled: bool) -> void:
 	_heart_mode = enabled
 	$GroundTiles.visible = not enabled
-	$CanvasLayer/HeartModeRainbow.visible = enabled
+	$CanvasLayer/HeartModeBackground.visible = enabled
+	$Player/HappyBoo/Colorizer.modulate = PLAYER_HEART_MODE_COLOR if enabled else PLAYER_DEFAULT_COLOR
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		_set_enemy_heart_skin(enemy, enabled)
 
