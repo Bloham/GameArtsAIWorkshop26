@@ -4,8 +4,13 @@ extends Node2D
 @export var item_interval: float = 8.0
 
 const REPLAY_COUNTDOWN_SECONDS: int = 10
+const WEAPON_CHOICE_SECONDS: float = 5.0
+const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
+const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 
 var _item_timer: float = 0.0
+var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
+var _weapon_choice_open := true
 var _replay_seconds_remaining: int = 0
 var _round_kills: int = 0
 var _high_score: int = 0
@@ -14,6 +19,7 @@ var _level_label: Label
 var _points_label: Label
 var _xp_bar: ProgressBar
 var _hud_panel: PanelContainer
+var _weapon_countdown_label: Label
 
 
 func _ready() -> void:
@@ -22,10 +28,103 @@ func _ready() -> void:
 		_high_score = int(save.get_value("score", "high_score", 0))
 	_update_score_display()
 	_build_progress_hud()
+	_build_weapon_choice()
+	get_node("Timer").stop()
+	get_node("Player").set_physics_process(false)
+	get_node("Player/Gun/Timer").stop()
 	var player_node: Node = get_node("Player")
 	player_node.connect("progression_changed", Callable(self, "_update_progress_hud"))
 	player_node.connect("level_up", Callable(self, "_animate_level_up_hud"))
 	_update_progress_hud(player_node.get("level"), player_node.get("skill_points"), player_node.get("experience"), player_node.get("xp_to_next"))
+
+
+func _build_weapon_choice() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "WeaponChoice"
+	layer.layer = 20
+	layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(layer)
+	var backdrop := ColorRect.new()
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.color = Color(0.015, 0.025, 0.055, 0.88)
+	layer.add_child(backdrop)
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.position = Vector2(-480, -250)
+	panel.custom_minimum_size = Vector2(960, 500)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.04, 0.08, 0.15, 1.0)
+	panel_style.border_color = Color(0.1, 0.85, 1.0, 1.0)
+	panel_style.set_border_width_all(3)
+	panel_style.set_corner_radius_all(18)
+	panel_style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	layer.add_child(panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 16)
+	panel.add_child(column)
+	var title := Label.new()
+	title.text = "CHOOSE YOUR WEAPON"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 36)
+	title.add_theme_color_override("font_color", Color(0.4, 0.95, 1.0))
+	column.add_child(title)
+	_weapon_countdown_label = Label.new()
+	_weapon_countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_weapon_countdown_label.add_theme_font_size_override("font_size", 22)
+	_weapon_countdown_label.add_theme_color_override("font_color", Color(1.0, 0.82, 0.24))
+	column.add_child(_weapon_countdown_label)
+	var choices := HBoxContainer.new()
+	choices.alignment = BoxContainer.ALIGNMENT_CENTER
+	choices.add_theme_constant_override("separation", 24)
+	column.add_child(choices)
+	_add_weapon_choice(choices, "ORIGINAL PISTOL", DEFAULT_WEAPON_TEXTURE)
+	_add_weapon_choice(choices, "HEAVY WEAPON", ALT_WEAPON_TEXTURE)
+	_update_weapon_countdown()
+
+
+func _add_weapon_choice(parent: HBoxContainer, title: String, texture_path: String) -> void:
+	var choice := Button.new()
+	choice.custom_minimum_size = Vector2(400, 330)
+	choice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choice.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	choice.pressed.connect(_on_weapon_chosen.bind(texture_path))
+	parent.add_child(choice)
+	var column := VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_theme_constant_override("separation", 10)
+	choice.add_child(column)
+	var preview := TextureRect.new()
+	preview.texture = load(texture_path)
+	preview.custom_minimum_size = Vector2(340, 240)
+	preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(preview)
+	var label := Label.new()
+	label.text = title
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 26)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(label)
+
+
+func _update_weapon_countdown() -> void:
+	if _weapon_countdown_label:
+		_weapon_countdown_label.text = "Starting in %d seconds — pistol is the default" % int(ceil(_weapon_seconds_remaining))
+
+
+func _on_weapon_chosen(texture_path: String) -> void:
+	if not _weapon_choice_open:
+		return
+	_weapon_choice_open = false
+	get_node("Player/Gun").set_weapon_texture(texture_path)
+	get_node("WeaponChoice").queue_free()
+	get_node("Player").set_physics_process(true)
+	get_node("Player/Gun/Timer").start()
+	get_node("Timer").start()
 
 
 func _build_progress_hud() -> void:
@@ -115,6 +214,11 @@ func _update_score_display() -> void:
 
 
 func _process(delta: float) -> void:
+	if _weapon_choice_open:
+		_weapon_seconds_remaining -= delta
+		_update_weapon_countdown()
+		if _weapon_seconds_remaining <= 0.0:
+			_on_weapon_chosen(DEFAULT_WEAPON_TEXTURE)
 	if item_interval <= 0.0 or FeatureLibrary.items.is_empty():
 		return
 
