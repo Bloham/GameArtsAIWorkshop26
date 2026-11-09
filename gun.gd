@@ -62,6 +62,23 @@ func shoot():
 		first_wand_shot = false
 	%ShootingPoint.add_child(new_bullet)
 
+	# At point-blank range, the muzzle can sit beyond an enemy that overlaps
+	# the player. Start the shot inside that aimed-at enemy so it registers.
+	var mouse_position := get_global_mouse_position()
+	var point_blank_target: Node2D = null
+	var closest_mouse_distance := 100.0
+	for body in get_overlapping_bodies():
+		if not body.has_method("take_damage"):
+			continue
+		if global_position.distance_to(body.global_position) > 160.0:
+			continue
+		var mouse_distance := mouse_position.distance_to(body.global_position)
+		if mouse_distance < closest_mouse_distance:
+			point_blank_target = body
+			closest_mouse_distance = mouse_distance
+	if point_blank_target != null:
+		new_bullet.global_position = point_blank_target.global_position
+
 
 func _on_timer_timeout() -> void:
 	shoot()
