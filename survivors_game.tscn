@@ -30,6 +30,11 @@ position = Vector2(-1055, -697)
 [node name="GameOver" type="CanvasLayer" parent="." unique_id=880031702]
 unique_name_in_owner = true
 visible = false
+process_mode = 3
+
+[node name="ReplayCountdown" type="Timer" parent="GameOver"]
+unique_name_in_owner = true
+wait_time = 1.0
 
 [node name="ColorRect" type="ColorRect" parent="GameOver" unique_id=1711581986]
 anchors_preset = 15
@@ -56,6 +61,44 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 124
 text = "Game Over"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ReplayButton" type="Button" parent="GameOver/ColorRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = 125.0
+offset_right = 140.0
+offset_bottom = 205.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "Replay"
+
+[node name="ScoreHUD" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="ScoreLabel" type="Label" parent="ScoreHUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -360.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 112.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "Round Kills: 0\nHigh Score: 0"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1066809076]
@@ -103,3 +146,5 @@ position = Vector2(-573, -231)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="health_depleted" from="Player" to="." method="_on_player_health_depleted"]
+[connection signal="pressed" from="GameOver/ColorRect/ReplayButton" to="." method="_on_replay_button_pressed"]
+[connection signal="timeout" from="GameOver/ReplayCountdown" to="." method="_on_replay_countdown_timeout"]

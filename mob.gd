@@ -5,6 +5,7 @@ signal died
 
 var speed = randf_range(200, 300)
 var health = 3
+var _is_dying := false
 
 @onready var player = get_node("/root/Game/Player")
 
@@ -23,7 +24,9 @@ func take_damage():
 	%Slime.play_hurt()
 	health -= 1
 
-	if health == 0:
+	if health <= 0 and not _is_dying:
+		_is_dying = true
+		died.emit()
 		var smoke_scene = preload("res://smoke_explosion/smoke_explosion.tscn")
 		var smoke = smoke_scene.instantiate()
 		get_parent().add_child(smoke)

@@ -16,7 +16,10 @@ extends CharacterBody2D
 ## Optional: drag a sound file here and it plays when the enemy dies.
 @export var death_sound: AudioStream
 
+signal died
+
 var _player: Node2D
+var _is_dying := false
 
 
 func _ready() -> void:
@@ -47,6 +50,10 @@ func _flash() -> void:
 
 
 func _die() -> void:
+	if _is_dying:
+		return
+	_is_dying = true
+	died.emit()
 	if death_sound != null:
 		_play_sound(death_sound, global_position)
 	queue_free()
