@@ -9,10 +9,9 @@ func _ready() -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if not body.is_in_group("player"):
+	var player := get_tree().get_first_node_in_group("player")
+	if body != player or not player.has_method("apply_speed_boost"):
 		return
 
-	if body.has_method("apply_speed_boost"):
-		body.apply_speed_boost(boost_duration, speed_multiplier)
-
+	player.apply_speed_boost(boost_duration, speed_multiplier)
 	queue_free()
