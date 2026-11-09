@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://dsgxioo8wstff" path="res://game.gd" id="1_qclsr"]
 [ext_resource type="PackedScene" uid="uid://dsw8raqgacxsc" path="res://player.tscn" id="2_a7q7f"]
 [ext_resource type="PackedScene" uid="uid://c2qg1nuvfnd4q" path="res://trees/pine_tree.tscn" id="3_6h7ij"]
+[ext_resource type="AudioStream" path="res://music/nyan_cat_original.ogg" id="10_music"]
+[ext_resource type="Script" path="res://music/game_music.gd" id="11_music_script"]
 [ext_resource type="PackedScene" path="res://trees/rocks.tscn" id="6_rocks"]
 [ext_resource type="TileSet" path="res://tiles/emmas_ground_tile.tres" id="7_ground_tiles"]
 [ext_resource type="Script" uid="uid://c77omyj3xdrut" path="res://tiles/arena_floor.gd" id="8_arena_floor"]
@@ -42,6 +44,11 @@ script = ExtResource("1_qclsr")
 
 [node name="Timer" type="Timer" parent="." unique_id=173639759]
 wait_time = 0.3
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_music")
+volume_db = -30.5
+script = ExtResource("11_music_script")
 
 [node name="Player" parent="." unique_id=1174028023 instance=ExtResource("2_a7q7f")]
 
