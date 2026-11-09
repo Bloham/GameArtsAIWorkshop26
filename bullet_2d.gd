@@ -32,3 +32,5 @@ func _on_body_entered(body):
 			if current_scene != null and current_scene.has_method("spawn_heart_hit_effect"):
 				current_scene.call("spawn_heart_hit_effect", body)
 		body.take_damage()
+		if is_heart_mode_projectile and is_instance_valid(body):
+			body.take_damage()
