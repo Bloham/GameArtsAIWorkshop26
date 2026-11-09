@@ -1,7 +1,7 @@
 extends TileMapLayer
 
-const TILES_WIDE := 4
-const TILES_HIGH := 2
+const TILES_WIDE := 8
+const TILES_HIGH := 4
 
 
 func _ready() -> void:

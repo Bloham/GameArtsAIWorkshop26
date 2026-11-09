@@ -54,6 +54,7 @@ position = Vector2(-1055, -697)
 
 [node name="GroundTiles" type="TileMapLayer" parent="."]
 position = Vector2(-2048, -1024)
+scale = Vector2(0.5, 0.5)
 z_index = -10
 tile_set = ExtResource("7_ground_tiles")
 script = ExtResource("8_arena_floor")
