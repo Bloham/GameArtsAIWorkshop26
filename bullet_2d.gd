@@ -16,8 +16,15 @@ func configure_projectile(texture: Texture2D, projectile_speed: float, projectil
 	if heart_mode:
 		$Sprite.region_rect = HEART_MODE_BULLET_REGION
 		$Sprite.scale = Vector2(100.0, 100.0) / HEART_MODE_BULLET_REGION.size
+		$Sprite.position = Vector2.ZERO
+		var heart_hitbox := CircleShape2D.new()
+		heart_hitbox.radius = 50.0
+		$CollisionShape2D.shape = heart_hitbox
+		$CollisionShape2D.position = Vector2.ZERO
 	else:
 		$Sprite.scale = Vector2(0.2, 0.2)
+		$Sprite.position = Vector2(-11, -1)
+		$CollisionShape2D.position = Vector2(0, 3)
 	$Sprite.rotation = sprite_rotation
 	is_heart_mode_projectile = heart_mode
 
