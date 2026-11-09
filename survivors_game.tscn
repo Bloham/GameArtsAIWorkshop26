@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://trees/rocks.tscn" id="6_rocks"]
 [ext_resource type="TileSet" path="res://tiles/emmas_ground_tile.tres" id="7_ground_tiles"]
 [ext_resource type="Script" path="res://tiles/arena_floor.gd" id="8_arena_floor"]
+[ext_resource type="Script" path="res://trees/arena_border.gd" id="9_arena_border"]
 
 [sub_resource type="Curve2D" id="Curve2D_cp6e5"]
 _data = {
@@ -58,6 +59,8 @@ tile_set = ExtResource("7_ground_tiles")
 script = ExtResource("8_arena_floor")
 
 [node name="ArenaBoundary" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("9_arena_border")
 
 [node name="LeftWall" type="StaticBody2D" parent="ArenaBoundary"]
 position = Vector2(-1650, 0)
