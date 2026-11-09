@@ -4,16 +4,16 @@ extends Area2D
 @export var max_distance := 1200.0
 
 var travelled_distance := 0.0
-var is_heart_wand_projectile := false
+var is_heart_mode_projectile := false
 
 
-func configure_projectile(texture: Texture2D, projectile_speed: float, projectile_range: float, sprite_rotation: float, heart_wand: bool = false) -> void:
+func configure_projectile(texture: Texture2D, projectile_speed: float, projectile_range: float, sprite_rotation: float, heart_mode: bool = false) -> void:
 	speed = projectile_speed
 	max_distance = projectile_range
 	$Sprite.texture = texture
 	$Sprite.scale = Vector2(0.2, 0.2)
 	$Sprite.rotation = sprite_rotation
-	is_heart_wand_projectile = heart_wand
+	is_heart_mode_projectile = heart_mode
 
 
 func _physics_process(delta):
@@ -27,7 +27,7 @@ func _physics_process(delta):
 func _on_body_entered(body):
 	queue_free()
 	if body.has_method("take_damage"):
-		if is_heart_wand_projectile:
+		if is_heart_mode_projectile:
 			var current_scene := get_tree().current_scene
 			if current_scene != null and current_scene.has_method("spawn_heart_hit_effect"):
 				current_scene.call("spawn_heart_hit_effect", body)
