@@ -8,6 +8,9 @@ const WEAPON_CHOICE_SECONDS: float = 5.0
 const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
 const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
+const GREEN_ENEMY_SCENE := "res://mob.tscn"
+const HEART_WAND_ENEMY_TEXTURE := preload("res://characters/heart_wand_enemy.png")
+const HEART_EFFECT_TEXTURE := preload("res://pistol/heart_bullet.png")
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
 const SPAWN_MARGIN := 64.0
 const BASE_MAX_ENEMIES := 15
@@ -23,6 +26,7 @@ var _high_score: int = 0
 var _boss_respawn_pending := false
 var _active_boss: Node2D = null
 var _max_enemies: int = BASE_MAX_ENEMIES
+var _heart_wand_mode := false
 const HIGH_SCORE_PATH := "user://highscore.cfg"
 var _level_label: Label
 var _points_label: Label
@@ -199,7 +203,7 @@ func _animate_level_up_hud(_level: int) -> void:
 
 
 func spawn_mob():
-	if get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
+	if not _heart_wand_mode and get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
 		return
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
@@ -210,7 +214,7 @@ func spawn_mob():
 			return
 		scene = load(BOSS_SCENE)
 	else:
-		scene = FeatureLibrary.random_enemy()
+		scene = _random_enemy_scene()
 	var is_boss := scene.resource_path == BOSS_SCENE
 	if is_boss and _has_active_boss():
 		return
@@ -224,8 +228,104 @@ func spawn_mob():
 		_boss_respawn_pending = false
 		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
+	if _heart_wand_mode:
+		_set_enemy_heart_skin(new_mob, true)
 	if new_mob.has_signal("died"):
 		new_mob.connect("died", Callable(get_node("Player"), "gain_experience"))
+		new_mob.connect("died", _on_enemy_died.bind(new_mob))
+
+
+func spawn_heart_hit_effect(enemy: Node2D) -> void:
+	if not _heart_wand_mode:
+		return
+	enemy.set_meta("heart_wand_hit", true)
+	for index in 3:
+		var heart := Sprite2D.new()
+		heart.texture = HEART_EFFECT_TEXTURE
+		heart.scale = Vector2(0.035, 0.035)
+		heart.global_position = enemy.global_position + Vector2((index - 1) * 16.0, -38.0)
+		add_child(heart)
+		var tween := heart.create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(heart, "position:y", heart.position.y - 28.0 - randf_range(0.0, 10.0), 0.55)
+		tween.tween_property(heart, "modulate:a", 0.0, 0.55)
+		tween.chain().tween_callback(heart.queue_free)
+
+
+func _on_enemy_died(...signal_args) -> void:
+	if signal_args.is_empty():
+		return
+	var enemy := signal_args.back() as Node2D
+	if not is_instance_valid(enemy) or not enemy.has_meta("heart_wand_hit"):
+		return
+	var heart := Sprite2D.new()
+	heart.texture = HEART_EFFECT_TEXTURE
+	heart.scale = Vector2(0.0, 0.0)
+	heart.global_position = enemy.global_position
+	add_child(heart)
+	var tween := heart.create_tween()
+	tween.tween_property(heart, "scale", Vector2(0.07, 0.07), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.55)
+	tween.tween_property(heart, "modulate:a", 0.0, 0.27)
+	tween.tween_callback(heart.queue_free)
+
+
+func _random_enemy_scene() -> PackedScene:
+	var choices: Array[PackedScene] = FeatureLibrary.enemies.duplicate()
+	if choices.is_empty():
+		choices.append(load(GREEN_ENEMY_SCENE))
+	if _heart_wand_mode:
+		for enemy_scene in FeatureLibrary.enemies:
+			if enemy_scene.resource_path == GREEN_ENEMY_SCENE:
+				choices.append(enemy_scene)
+				break
+	return choices.pick_random()
+
+
+func set_heart_wand_mode(enabled: bool) -> void:
+	_heart_wand_mode = enabled
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		_set_enemy_heart_skin(enemy, enabled)
+
+
+func _set_enemy_heart_skin(enemy: Node, enabled: bool) -> void:
+	var skin := enemy.get_node_or_null("HeartWandSkin") as Sprite2D
+	if enabled:
+		if skin == null:
+			var hidden_visuals: Array[NodePath] = []
+			for visual in enemy.find_children("*", "CanvasItem", true, false):
+				if visual is CollisionShape2D or visual is CollisionPolygon2D:
+					continue
+				if visual.visible:
+					hidden_visuals.append(enemy.get_path_to(visual))
+					visual.visible = false
+			enemy.set_meta("heart_hidden_visuals", hidden_visuals)
+			skin = Sprite2D.new()
+			skin.name = "HeartWandSkin"
+			skin.texture = HEART_WAND_ENEMY_TEXTURE
+			skin.centered = true
+			skin.z_index = 10
+			enemy.add_child(skin)
+			var shape := enemy.find_child("CollisionShape2D", true, false) as CollisionShape2D
+			var display_size := Vector2(64, 64)
+			if shape != null:
+				skin.position = enemy.to_local(shape.global_position)
+				if shape.shape is CircleShape2D:
+					display_size = Vector2.ONE * shape.shape.radius * 2.0
+				elif shape.shape is RectangleShape2D:
+					display_size = shape.shape.size
+			skin.scale = display_size / Vector2(HEART_WAND_ENEMY_TEXTURE.get_size())
+		else:
+			skin.visible = true
+	else:
+		if skin != null:
+			skin.visible = false
+		if enemy.has_meta("heart_hidden_visuals"):
+			for visual_path in enemy.get_meta("heart_hidden_visuals"):
+				var visual := enemy.get_node_or_null(visual_path) as CanvasItem
+				if visual != null:
+					visual.visible = true
+			enemy.remove_meta("heart_hidden_visuals")
 
 
 func _on_enemy_removed() -> void:

@@ -48,7 +48,7 @@ func _set_weapon(weapon: Weapon) -> void:
 	%Pistol.visible = weapon == Weapon.PISTOL
 	%HeartWand.visible = weapon == Weapon.HEART_WAND
 	%ShootingPoint.position = Vector2(51, -11) if weapon == Weapon.PISTOL else Vector2(50, 0)
-	%Timer.wait_time = 0.353 if weapon == Weapon.PISTOL else 0.55
+	%Timer.wait_time = 0.353
 	%Timer.start()
 	_sync_music_to_weapon()
 
@@ -57,6 +57,8 @@ func _sync_music_to_weapon() -> void:
 	var current_scene := get_tree().current_scene
 	if current_scene == null:
 		return
+	if current_scene.has_method("set_heart_wand_mode"):
+		current_scene.call("set_heart_wand_mode", current_weapon == Weapon.HEART_WAND)
 	var music := current_scene.get_node_or_null("BackgroundMusic") as AudioStreamPlayer
 	if music == null:
 		return
@@ -70,7 +72,7 @@ func _sync_music_to_weapon() -> void:
 func shoot():
 	var new_bullet = BULLET.instantiate()
 	if current_weapon == Weapon.HEART_WAND:
-		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 900.0, 1000.0, PI / 2.0, 3)
+		new_bullet.configure_projectile(HEART_BULLET_TEXTURE, 900.0, 1000.0, PI / 2.0, 3, true)
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	if current_weapon == Weapon.HEART_WAND and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0
