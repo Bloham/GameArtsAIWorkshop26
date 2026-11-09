@@ -32,6 +32,10 @@ unique_name_in_owner = true
 visible = false
 process_mode = 3
 
+[node name="ReplayCountdown" type="Timer" parent="GameOver"]
+unique_name_in_owner = true
+wait_time = 1.0
+
 [node name="ColorRect" type="ColorRect" parent="GameOver" unique_id=1711581986]
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,6 +64,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ReplayButton" type="Button" parent="GameOver/ColorRect"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -121,3 +126,4 @@ position = Vector2(-573, -231)
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="health_depleted" from="Player" to="." method="_on_player_health_depleted"]
 [connection signal="pressed" from="GameOver/ColorRect/ReplayButton" to="." method="_on_replay_button_pressed"]
+[connection signal="timeout" from="GameOver/ReplayCountdown" to="." method="_on_replay_countdown_timeout"]

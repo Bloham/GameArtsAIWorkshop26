@@ -3,7 +3,10 @@ extends Node2D
 ## Seconds between item drops. Set to 0 to turn items off.
 @export var item_interval: float = 8.0
 
+const REPLAY_COUNTDOWN_SECONDS: int = 10
+
 var _item_timer: float = 0.0
+var _replay_seconds_remaining: int = 0
 
 
 func spawn_mob():
@@ -43,8 +46,29 @@ func _on_timer_timeout():
 func _on_player_health_depleted():
 	%GameOver.show()
 	get_tree().paused = true
+	_replay_seconds_remaining = REPLAY_COUNTDOWN_SECONDS
+	_update_replay_button()
+	%ReplayCountdown.start()
 
 
 func _on_replay_button_pressed() -> void:
+	_restart_game()
+
+
+func _on_replay_countdown_timeout() -> void:
+	_replay_seconds_remaining -= 1
+	if _replay_seconds_remaining <= 0:
+		_restart_game()
+		return
+
+	_update_replay_button()
+
+
+func _update_replay_button() -> void:
+	%ReplayButton.text = "Replay (%d)" % _replay_seconds_remaining
+
+
+func _restart_game() -> void:
+	%ReplayCountdown.stop()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
