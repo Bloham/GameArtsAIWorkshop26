@@ -7,6 +7,17 @@ const REPLAY_COUNTDOWN_SECONDS: int = 10
 
 var _item_timer: float = 0.0
 var _replay_seconds_remaining: int = 0
+var _round_kills: int = 0
+var _high_score: int = 0
+
+const HIGH_SCORE_PATH := "user://highscore.cfg"
+
+
+func _ready() -> void:
+	var save := ConfigFile.new()
+	if save.load(HIGH_SCORE_PATH) == OK:
+		_high_score = int(save.get_value("score", "high_score", 0))
+	_update_score_display()
 
 
 func spawn_mob():
@@ -16,7 +27,22 @@ func spawn_mob():
 	var scene: PackedScene = FeatureLibrary.random_enemy()
 	var new_mob = scene.instantiate()
 	new_mob.global_position = %PathFollow2D.global_position
+	new_mob.tree_exited.connect(_on_enemy_removed)
 	add_child(new_mob)
+
+
+func _on_enemy_removed() -> void:
+	_round_kills += 1
+	if _round_kills > _high_score:
+		_high_score = _round_kills
+		var save := ConfigFile.new()
+		save.set_value("score", "high_score", _high_score)
+		save.save(HIGH_SCORE_PATH)
+	_update_score_display()
+
+
+func _update_score_display() -> void:
+	%ScoreLabel.text = "Round Kills: %d\nHigh Score: %d" % [_round_kills, _high_score]
 
 
 func _process(delta: float) -> void:

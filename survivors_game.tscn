@@ -80,6 +80,27 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 36
 text = "Replay"
 
+[node name="ScoreHUD" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="ScoreLabel" type="Label" parent="ScoreHUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -360.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 112.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "Round Kills: 0\nHigh Score: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1066809076]
 layer = -32
 
