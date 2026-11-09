@@ -24,7 +24,7 @@ func set_heart_mode(enabled: bool) -> void:
 		heart = Sprite2D.new()
 		heart.name = "HeartSprite"
 		heart.texture = HEART_TEXTURE
-		heart.scale = Vector2(18, 18) / Vector2(HEART_TEXTURE.get_size())
+		heart.scale = Vector2(32, 32) / Vector2(HEART_TEXTURE.get_size())
 		add_child(heart)
 
 
