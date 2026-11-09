@@ -44,9 +44,14 @@ func take_damage() -> void:
 	if _is_dying:
 		return
 	health -= 1
-	modulate = Color(0.65, 0.85, 1.0)
-	create_tween().tween_property(self, "modulate", Color.WHITE, 0.12)
+	_flash()
 	if health <= 0:
 		_is_dying = true
 		died.emit()
 		queue_free()
+
+
+func _flash() -> void:
+	modulate = Color(1.0, 0.45, 0.45)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.12)
