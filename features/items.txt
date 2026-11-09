@@ -12,3 +12,4 @@
 # res://features/tomas-health-pack/health_pack.tscn
 #
 # (Empty means no items spawn.)
+res://features/heart-health/heart_health.tscn
