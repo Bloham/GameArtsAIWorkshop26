@@ -285,7 +285,7 @@ func _random_enemy_scene() -> PackedScene:
 func set_heart_mode(enabled: bool) -> void:
 	_heart_mode = enabled
 	$GroundTiles.visible = not enabled
-	$CanvasLayer/HeartModeRainbow.visible = enabled
+	$CanvasLayer/HeartModeBackground.visible = enabled
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		_set_enemy_heart_skin(enemy, enabled)
 
