@@ -11,6 +11,12 @@ _data = {
 }
 point_count = 5
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_BoundarySide"]
+size = Vector2(100, 1540)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_BoundaryEnd"]
+size = Vector2(2300, 100)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_SurvivalTimer"]
 bg_color = Color(0.04, 0.05, 0.08, 0.82)
 border_width_left = 2
@@ -42,6 +48,46 @@ curve = SubResource("Curve2D_cp6e5")
 [node name="PathFollow2D" type="PathFollow2D" parent="Player/Path2D" unique_id=949713007]
 unique_name_in_owner = true
 position = Vector2(-1055, -697)
+
+[node name="ArenaBoundary" type="Node2D" parent="."]
+
+[node name="BorderLine" type="Line2D" parent="ArenaBoundary"]
+z_index = 40
+points = PackedVector2Array(-1100, -720, 1100, -720, 1100, 720, -1100, 720, -1100, -720)
+width = 12.0
+default_color = Color(0.85, 0.85, 0.46, 0.9)
+
+[node name="LeftWall" type="StaticBody2D" parent="ArenaBoundary"]
+position = Vector2(-1150, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/LeftWall"]
+shape = SubResource("RectangleShape2D_BoundarySide")
+
+[node name="RightWall" type="StaticBody2D" parent="ArenaBoundary"]
+position = Vector2(1150, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/RightWall"]
+shape = SubResource("RectangleShape2D_BoundarySide")
+
+[node name="TopWall" type="StaticBody2D" parent="ArenaBoundary"]
+position = Vector2(0, -770)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/TopWall"]
+shape = SubResource("RectangleShape2D_BoundaryEnd")
+
+[node name="BottomWall" type="StaticBody2D" parent="ArenaBoundary"]
+position = Vector2(0, 770)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/BottomWall"]
+shape = SubResource("RectangleShape2D_BoundaryEnd")
 
 [node name="GameOver" type="CanvasLayer" parent="." unique_id=880031702]
 unique_name_in_owner = true
