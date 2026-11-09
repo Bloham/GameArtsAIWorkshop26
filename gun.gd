@@ -57,6 +57,8 @@ func _sync_music_to_weapon() -> void:
 	var current_scene := get_tree().current_scene
 	if current_scene == null:
 		return
+	if current_scene.has_method("set_heart_wand_mode"):
+		current_scene.call("set_heart_wand_mode", current_weapon == Weapon.HEART_WAND)
 	var music := current_scene.get_node_or_null("BackgroundMusic") as AudioStreamPlayer
 	if music == null:
 		return
