@@ -21,7 +21,7 @@ var _survival_time: float = 0.0
 var _round_kills: int = 0
 var _high_score: int = 0
 var _boss_respawn_pending := false
-var _boss_active := false
+var _active_boss: Node2D = null
 var _max_enemies: int = BASE_MAX_ENEMIES
 const HIGH_SCORE_PATH := "user://highscore.cfg"
 var _level_label: Label
@@ -206,21 +206,21 @@ func spawn_mob():
 	# or the original slime if no student has registered one yet.
 	var scene: PackedScene
 	if _boss_respawn_pending:
-		if _boss_active or not get_tree().get_nodes_in_group("boss").is_empty():
+		if _has_active_boss():
 			return
 		scene = load(BOSS_SCENE)
 	else:
 		scene = FeatureLibrary.random_enemy()
-	var new_mob = scene.instantiate()
-	var is_boss: bool = new_mob.is_in_group("boss")
-	if is_boss and (_boss_active or not get_tree().get_nodes_in_group("boss").is_empty()):
-		new_mob.free()
+	var is_boss := scene.resource_path == BOSS_SCENE
+	if is_boss and _has_active_boss():
 		return
+	var new_mob := scene.instantiate() as Node2D
 	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
 	new_mob.add_to_group("enemies")
 	if is_boss:
-		_boss_active = true
+		_active_boss = new_mob
+		new_mob.add_to_group("boss")
 		_boss_respawn_pending = false
 		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
@@ -239,8 +239,14 @@ func _on_enemy_removed() -> void:
 
 
 func _on_boss_removed() -> void:
-	_boss_active = false
+	_active_boss = null
 	_boss_respawn_pending = true
+
+
+func _has_active_boss() -> bool:
+	if is_instance_valid(_active_boss) and _active_boss.is_inside_tree():
+		return true
+	return not get_tree().get_nodes_in_group("boss").is_empty()
 
 
 func _update_score_display() -> void:
