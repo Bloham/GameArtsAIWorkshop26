@@ -84,6 +84,15 @@ func heal(amount: float) -> void:
 	%HealthBar.value = health
 
 
+func take_damage(amount: float) -> void:
+	if health <= 0.0:
+		return
+	health = maxf(health - amount, 0.0)
+	%HealthBar.value = health
+	if health <= 0.0:
+		health_depleted.emit()
+
+
 func _physics_process(delta):
 	if _speed_boost_time_remaining > 0.0:
 		_speed_boost_time_remaining = maxf(_speed_boost_time_remaining - delta, 0.0)

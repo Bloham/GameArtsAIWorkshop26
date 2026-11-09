@@ -7,6 +7,11 @@ const REPLAY_COUNTDOWN_SECONDS: int = 10
 const WEAPON_CHOICE_SECONDS: float = 5.0
 const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
 const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
+const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
+const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
+const SPAWN_MARGIN := 64.0
+const BASE_MAX_ENEMIES := 15
+const ENEMIES_PER_LEVEL := 10
 
 var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
@@ -15,6 +20,9 @@ var _replay_seconds_remaining: int = 0
 var _survival_time: float = 0.0
 var _round_kills: int = 0
 var _high_score: int = 0
+var _boss_respawn_pending := false
+var _active_boss: Node2D = null
+var _max_enemies: int = BASE_MAX_ENEMIES
 const HIGH_SCORE_PATH := "user://highscore.cfg"
 var _level_label: Label
 var _points_label: Label
@@ -175,6 +183,7 @@ func _make_bar_style(color: Color) -> StyleBoxFlat:
 
 
 func _update_progress_hud(level: int, points: int, xp: int, needed: int) -> void:
+	_max_enemies = BASE_MAX_ENEMIES + (level - 1) * ENEMIES_PER_LEVEL
 	_level_label.text = "✦  LEVEL %02d" % level
 	_points_label.text = "SKILL POINTS: %d" % points
 	_xp_bar.max_value = needed
@@ -190,13 +199,30 @@ func _animate_level_up_hud(_level: int) -> void:
 
 
 func spawn_mob():
+	if get_tree().get_nodes_in_group("enemies").size() >= _max_enemies:
+		return
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
 	# or the original slime if no student has registered one yet.
-	var scene: PackedScene = FeatureLibrary.random_enemy()
-	var new_mob = scene.instantiate()
-	new_mob.global_position = %PathFollow2D.global_position
+	var scene: PackedScene
+	if _boss_respawn_pending:
+		if _has_active_boss():
+			return
+		scene = load(BOSS_SCENE)
+	else:
+		scene = FeatureLibrary.random_enemy()
+	var is_boss := scene.resource_path == BOSS_SCENE
+	if is_boss and _has_active_boss():
+		return
+	var new_mob := scene.instantiate() as Node2D
+	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
+	new_mob.add_to_group("enemies")
+	if is_boss:
+		_active_boss = new_mob
+		new_mob.add_to_group("boss")
+		_boss_respawn_pending = false
+		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
 	if new_mob.has_signal("died"):
 		new_mob.connect("died", Callable(get_node("Player"), "gain_experience"))
@@ -210,6 +236,17 @@ func _on_enemy_removed() -> void:
 		save.set_value("score", "high_score", _high_score)
 		save.save(HIGH_SCORE_PATH)
 	_update_score_display()
+
+
+func _on_boss_removed() -> void:
+	_active_boss = null
+	_boss_respawn_pending = true
+
+
+func _has_active_boss() -> bool:
+	if is_instance_valid(_active_boss) and _active_boss.is_inside_tree():
+		return true
+	return not get_tree().get_nodes_in_group("boss").is_empty()
 
 
 func _update_score_display() -> void:
@@ -241,8 +278,16 @@ func spawn_item():
 		return
 	%PathFollow2D.progress_ratio = randf()
 	var new_item = scene.instantiate()
-	new_item.global_position = %PathFollow2D.global_position
+	new_item.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	add_child(new_item)
+
+
+func _clamp_to_arena(position: Vector2) -> Vector2:
+	var spawn_limit := ARENA_HALF_EXTENTS - Vector2.ONE * SPAWN_MARGIN
+	return Vector2(
+		clampf(position.x, -spawn_limit.x, spawn_limit.x),
+		clampf(position.y, -spawn_limit.y, spawn_limit.y)
+	)
 
 
 func _on_timer_timeout():

@@ -1,4 +1,5 @@
 extends CharacterBody2D
+signal died(experience_reward: int)
 ## START HERE if your feature is an ENEMY.
 ##
 ## Copy this whole folder, rename it to yourname-featurename, then change this
@@ -17,6 +18,7 @@ extends CharacterBody2D
 @export var death_sound: AudioStream
 
 var _player: Node2D
+var _is_dying := false
 
 
 func _ready() -> void:
@@ -33,6 +35,8 @@ func _physics_process(_delta: float) -> void:
 
 ## Called by bullets. Every enemy needs this function.
 func take_damage() -> void:
+	if _is_dying:
+		return
 	health -= 1
 	_flash()
 
@@ -47,6 +51,10 @@ func _flash() -> void:
 
 
 func _die() -> void:
+	if _is_dying:
+		return
+	_is_dying = true
+	died.emit(2)
 	if death_sound != null:
 		_play_sound(death_sound, global_position)
 	queue_free()

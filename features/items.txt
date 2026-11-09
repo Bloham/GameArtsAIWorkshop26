@@ -13,3 +13,4 @@
 #
 # (Empty means no items spawn.)
 res://features/bagne2000-speed-boost/speed_boost.tscn
+res://features/heart-health/heart_health.tscn

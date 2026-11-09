@@ -14,3 +14,5 @@
 # (Nobody has registered an enemy yet, so the game uses the original slime.)
 
 res://features/liselle-boss/boss.tscn
+res://mob.tscn
+res://features/blue-sentry/blue_sentry.tscn

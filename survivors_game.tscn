@@ -3,6 +3,12 @@
 [ext_resource type="Script" uid="uid://dsgxioo8wstff" path="res://game.gd" id="1_qclsr"]
 [ext_resource type="PackedScene" uid="uid://dsw8raqgacxsc" path="res://player.tscn" id="2_a7q7f"]
 [ext_resource type="PackedScene" uid="uid://c2qg1nuvfnd4q" path="res://trees/pine_tree.tscn" id="3_6h7ij"]
+[ext_resource type="PackedScene" path="res://trees/rocks.tscn" id="6_rocks"]
+[ext_resource type="TileSet" uid="uid://bukxm16ti3rup" path="res://tiles/emmas_ground_tile.tres" id="7_ground_tiles"]
+[ext_resource type="Script" uid="uid://c77omyj3xdrut" path="res://tiles/arena_floor.gd" id="8_arena_floor"]
+[ext_resource type="Script" uid="uid://cbvflhjiystwv" path="res://trees/arena_border.gd" id="9_arena_border"]
+[ext_resource type="AudioStream" uid="uid://drrn0mdocy88u" path="res://music/nyan_cat_original.ogg" id="10_music"]
+[ext_resource type="Script" uid="uid://bs4xiko41thid" path="res://music/game_music.gd" id="11_music_script"]
 
 [sub_resource type="Curve2D" id="Curve2D_cp6e5"]
 _data = {
@@ -10,7 +16,17 @@ _data = {
 }
 point_count = 5
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_BoundarySide"]
+size = Vector2(100, 2100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_BoundaryEnd"]
+size = Vector2(3300, 100)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_SurvivalTimer"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
 bg_color = Color(0.04, 0.05, 0.08, 0.82)
 border_width_left = 2
 border_width_top = 2
@@ -21,17 +37,19 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-content_margin_left = 14.0
-content_margin_top = 8.0
-content_margin_right = 14.0
-content_margin_bottom = 8.0
 
 [node name="Game" type="Node2D" unique_id=327747119]
 y_sort_enabled = true
 script = ExtResource("1_qclsr")
+metadata/_edit_horizontal_guides_ = [-812.0]
 
 [node name="Timer" type="Timer" parent="." unique_id=173639759]
 wait_time = 0.3
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="." unique_id=408386901]
+stream = ExtResource("10_music")
+volume_db = -30.5
+script = ExtResource("11_music_script")
 
 [node name="Player" parent="." unique_id=1174028023 instance=ExtResource("2_a7q7f")]
 
@@ -42,14 +60,48 @@ curve = SubResource("Curve2D_cp6e5")
 unique_name_in_owner = true
 position = Vector2(-1055, -697)
 
+[node name="GroundTiles" type="TileMapLayer" parent="." unique_id=2134300471]
+z_index = -10
+position = Vector2(-2048, -1024)
+scale = Vector2(0.5, 0.5)
+tile_set = ExtResource("7_ground_tiles")
+script = ExtResource("8_arena_floor")
+
+[node name="ArenaBoundary" type="Node2D" parent="." unique_id=1277640092]
+y_sort_enabled = true
+script = ExtResource("9_arena_border")
+
+[node name="LeftWall" type="StaticBody2D" parent="ArenaBoundary" unique_id=1925778083]
+position = Vector2(-1650, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/LeftWall" unique_id=399599033]
+shape = SubResource("RectangleShape2D_BoundarySide")
+
+[node name="RightWall" type="StaticBody2D" parent="ArenaBoundary" unique_id=2055234769]
+position = Vector2(1650, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/RightWall" unique_id=1120845696]
+shape = SubResource("RectangleShape2D_BoundarySide")
+
+[node name="TopWall" type="StaticBody2D" parent="ArenaBoundary" unique_id=288349940]
+position = Vector2(0, -1050)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/TopWall" unique_id=923832797]
+shape = SubResource("RectangleShape2D_BoundaryEnd")
+
+[node name="BottomWall" type="StaticBody2D" parent="ArenaBoundary" unique_id=634440308]
+position = Vector2(0, 1050)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary/BottomWall" unique_id=434866832]
+shape = SubResource("RectangleShape2D_BoundaryEnd")
+
 [node name="GameOver" type="CanvasLayer" parent="." unique_id=880031702]
 unique_name_in_owner = true
-visible = false
 process_mode = 3
+visible = false
 
-[node name="ReplayCountdown" type="Timer" parent="GameOver"]
+[node name="ReplayCountdown" type="Timer" parent="GameOver" unique_id=1277904868]
 unique_name_in_owner = true
-wait_time = 1.0
 
 [node name="ColorRect" type="ColorRect" parent="GameOver" unique_id=1711581986]
 anchors_preset = 15
@@ -78,7 +130,7 @@ text = "Game Over"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FinalTimeLabel" type="Label" parent="GameOver/ColorRect"]
+[node name="FinalTimeLabel" type="Label" parent="GameOver/ColorRect" unique_id=1385295231]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -87,7 +139,6 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -400.0
-offset_top = 0.0
 offset_right = 400.0
 offset_bottom = 76.0
 grow_horizontal = 2
@@ -97,7 +148,7 @@ text = "Time survived: 00:00"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ReplayButton" type="Button" parent="GameOver/ColorRect"]
+[node name="ReplayButton" type="Button" parent="GameOver/ColorRect" unique_id=2059369501]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -114,12 +165,11 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 36
 text = "Replay"
 
-[node name="ScoreHUD" type="CanvasLayer" parent="."]
+[node name="ScoreHUD" type="CanvasLayer" parent="." unique_id=1501155002]
 layer = 2
 
-[node name="ScoreLabel" type="Label" parent="ScoreHUD"]
+[node name="ScoreLabel" type="Label" parent="ScoreHUD" unique_id=1527398140]
 unique_name_in_owner = true
-layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -127,23 +177,25 @@ offset_left = -360.0
 offset_top = 24.0
 offset_right = -24.0
 offset_bottom = 112.0
+grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
-text = "Round Kills: 0\nHigh Score: 0"
+text = "Round Kills: 0
+High Score: 0"
 horizontal_alignment = 2
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=20277385]
 
-[node name="SurvivalTimer" type="PanelContainer" parent="HUD"]
+[node name="SurvivalTimer" type="PanelContainer" parent="HUD" unique_id=1698424310]
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 360.0
 offset_bottom = 82.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_SurvivalTimer")
 
-[node name="SurvivalTimeLabel" type="Label" parent="HUD/SurvivalTimer"]
+[node name="SurvivalTimeLabel" type="Label" parent="HUD/SurvivalTimer" unique_id=552196340]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
@@ -154,12 +206,14 @@ vertical_alignment = 1
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1066809076]
 layer = -32
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=980385255]
+[node name="Background" type="ColorRect" parent="CanvasLayer" unique_id=980385255]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+color = Color(0.28, 0.34, 0.19, 1)
 
 [node name="PineTree" parent="." unique_id=1536469701 instance=ExtResource("3_6h7ij")]
 position = Vector2(66, 591)
@@ -194,7 +248,55 @@ position = Vector2(-346, -355)
 [node name="PineTree10" parent="." unique_id=1043826134 instance=ExtResource("3_6h7ij")]
 position = Vector2(-573, -231)
 
+[node name="Rocks" parent="." unique_id=323352094 instance=ExtResource("6_rocks")]
+position = Vector2(350, -10)
+
+[node name="PineTree12" parent="." unique_id=195003767 instance=ExtResource("3_6h7ij")]
+position = Vector2(-788, 370)
+
+[node name="PineTree7" parent="PineTree12" unique_id=8829659 instance=ExtResource("3_6h7ij")]
+position = Vector2(-426, 351)
+
+[node name="PineTree7" parent="PineTree12/PineTree7" unique_id=1879393700 instance=ExtResource("3_6h7ij")]
+position = Vector2(668, 169)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7" unique_id=646691999 instance=ExtResource("3_6h7ij")]
+position = Vector2(1768, -12)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7/PineTree7" unique_id=1011337877 instance=ExtResource("3_6h7ij")]
+position = Vector2(137, -167)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=1313228769 instance=ExtResource("3_6h7ij")]
+position = Vector2(34, -1510)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=1380908492 instance=ExtResource("3_6h7ij")]
+position = Vector2(-145, 590)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=769889064 instance=ExtResource("3_6h7ij")]
+position = Vector2(-2264, -604)
+
+[node name="PineTree7" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=1609970010 instance=ExtResource("3_6h7ij")]
+position = Vector2(-827, -621)
+
+[node name="PineTree8" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=1138506758 instance=ExtResource("3_6h7ij")]
+position = Vector2(-827, -621)
+
+[node name="PineTree9" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7" unique_id=1145134642 instance=ExtResource("3_6h7ij")]
+position = Vector2(-312, 595)
+
+[node name="PineTree9" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree9" unique_id=1348092698 instance=ExtResource("3_6h7ij")]
+position = Vector2(2529, -402)
+
+[node name="PineTree9" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree9/PineTree9" unique_id=406897327 instance=ExtResource("3_6h7ij")]
+position = Vector2(-749, -232)
+
+[node name="PineTree9" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree9/PineTree9/PineTree9" unique_id=885436310 instance=ExtResource("3_6h7ij")]
+position = Vector2(-1932, -26)
+
+[node name="PineTree9" parent="PineTree12/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree7/PineTree9/PineTree9/PineTree9/PineTree9" unique_id=1594880720 instance=ExtResource("3_6h7ij")]
+position = Vector2(1331, 255)
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="health_depleted" from="Player" to="." method="_on_player_health_depleted"]
-[connection signal="pressed" from="GameOver/ColorRect/ReplayButton" to="." method="_on_replay_button_pressed"]
 [connection signal="timeout" from="GameOver/ReplayCountdown" to="." method="_on_replay_countdown_timeout"]
+[connection signal="pressed" from="GameOver/ColorRect/ReplayButton" to="." method="_on_replay_button_pressed"]
