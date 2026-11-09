@@ -13,4 +13,4 @@
 #
 # (Empty means no items spawn.)
 res://features/heart-health/heart_health.tscn
-res://features/rainbow-heart-item/rainbow_heart_item.tscn
+res://features/rainbow-mushroom/rainbow_mushroom.tscn

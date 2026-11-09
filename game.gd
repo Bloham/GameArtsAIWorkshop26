@@ -60,7 +60,7 @@ func _ready() -> void:
 
 
 func activate_heart_mode_item() -> void:
-	_heart_mode_item_timer.start(40.0)
+	_heart_mode_item_timer.start(20.0)
 	get_node("Player/Gun").activate_heart_mode_from_item()
 
 
