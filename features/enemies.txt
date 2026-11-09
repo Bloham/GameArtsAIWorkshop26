@@ -12,3 +12,5 @@
 # res://features/anna-fire-slime/fire_slime.tscn
 #
 # (Nobody has registered an enemy yet, so the game uses the original slime.)
+
+res://features/liselle-boss/boss.tscn
