@@ -34,8 +34,8 @@ func _build_progress_hud() -> void:
 	add_child(layer)
 	var panel := PanelContainer.new()
 	_hud_panel = panel
-	panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	panel.position = Vector2(-330, 28)
+	panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	panel.position = Vector2(-150, -140)
 	panel.custom_minimum_size = Vector2(300, 112)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.035, 0.055, 0.11, 0.92)
