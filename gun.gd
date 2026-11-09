@@ -37,8 +37,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 	if event.physical_keycode == KEY_1:
 		_set_weapon(Weapon.PISTOL)
-	elif event.physical_keycode == KEY_2:
-		_set_weapon(Weapon.HEART_MODE)
 
 
 func _set_weapon(weapon: Weapon) -> void:
