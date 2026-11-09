@@ -10,6 +10,7 @@ const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
 const BOSS_SCENE := "res://features/liselle-boss/boss.tscn"
 const ARENA_HALF_EXTENTS := Vector2(1600.0, 1000.0)
 const SPAWN_MARGIN := 64.0
+const MAX_ENEMIES := 15
 
 var _item_timer: float = 0.0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
@@ -194,6 +195,8 @@ func _animate_level_up_hud(_level: int) -> void:
 
 
 func spawn_mob():
+	if get_tree().get_nodes_in_group("enemies").size() >= MAX_ENEMIES:
+		return
 	%PathFollow2D.progress_ratio = randf()
 	# FeatureLibrary picks a random enemy from features/enemies.txt,
 	# or the original slime if no student has registered one yet.
@@ -210,6 +213,7 @@ func spawn_mob():
 		return
 	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
+	new_mob.add_to_group("enemies")
 	if new_mob.is_in_group("boss"):
 		new_mob.tree_exited.connect(_on_boss_removed)
 	add_child(new_mob)
