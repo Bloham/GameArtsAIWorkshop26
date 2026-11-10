@@ -126,7 +126,13 @@ func _add_weapon_choice(parent: HBoxContainer, title: String, texture_path: Stri
 	column.add_theme_constant_override("separation", 10)
 	choice.add_child(column)
 	var preview := TextureRect.new()
-	preview.texture = load(texture_path)
+	var preview_texture: Texture2D = load(texture_path)
+	if texture_path == ALT_WEAPON_TEXTURE:
+		var cropped_preview := AtlasTexture.new()
+		cropped_preview.atlas = preview_texture
+		cropped_preview.region = Rect2(30, 116, 452, 300)
+		preview_texture = cropped_preview
+	preview.texture = preview_texture
 	preview.custom_minimum_size = Vector2(340, 240)
 	preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

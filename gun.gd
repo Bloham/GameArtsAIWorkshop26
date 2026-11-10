@@ -4,8 +4,10 @@ enum Weapon { PISTOL, HEART_MODE }
 
 const BULLET := preload("res://bullet_2d.tscn")
 const HEART_MODE_BULLET_TEXTURE := preload("res://pistol/heart_mode_bullet.png")
+const HEAVY_WEAPON_DAMAGE := 3
 
 var current_weapon: Weapon = Weapon.PISTOL
+var is_heavy_weapon := false
 var first_wand_shot := true
 
 
@@ -13,9 +15,10 @@ func set_weapon_texture(texture_path: String) -> void:
 	var weapon: Sprite2D = get_node("WeaponPivot/Pistol")
 	weapon.texture = load(texture_path)
 	weapon.region_enabled = texture_path == "res://heavy_weapon.png"
+	is_heavy_weapon = weapon.region_enabled
 	if weapon.region_enabled:
 		weapon.region_rect = Rect2(30, 116, 452, 300)
-		weapon.scale = Vector2(0.45, 0.45)
+		weapon.scale = Vector2(0.24, 0.24)
 		weapon.offset = Vector2(16, 0)
 	else:
 		weapon.scale = Vector2.ONE
@@ -81,6 +84,8 @@ func shoot():
 	var new_bullet = BULLET.instantiate()
 	if current_weapon == Weapon.HEART_MODE:
 		new_bullet.configure_projectile(HEART_MODE_BULLET_TEXTURE, 1800.0, 1000.0, PI / 2.0, 3, true)
+	elif is_heavy_weapon:
+		new_bullet.damage = HEAVY_WEAPON_DAMAGE
 	new_bullet.global_transform = %ShootingPoint.global_transform
 	if current_weapon == Weapon.HEART_MODE and first_wand_shot:
 		new_bullet.global_rotation = -PI / 2.0
