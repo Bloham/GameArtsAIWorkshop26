@@ -49,7 +49,7 @@ wait_time = 0.3
 
 [node name="BackgroundMusic" type="AudioStreamPlayer" parent="." unique_id=408386901]
 stream = ExtResource("10_music")
-volume_db = -30.5
+volume_db = -20.0
 script = ExtResource("11_music_script")
 
 [node name="Player" parent="." unique_id=1174028023 instance=ExtResource("2_a7q7f")]

@@ -66,6 +66,7 @@ func _sync_music_to_weapon() -> void:
 		return
 	if current_scene.has_method("set_heart_mode"):
 		current_scene.call("set_heart_mode", current_weapon == Weapon.HEART_MODE)
+		return
 	var music := current_scene.get_node_or_null("BackgroundMusic") as AudioStreamPlayer
 	if music == null:
 		return

@@ -301,6 +301,13 @@ func _random_enemy_scene() -> PackedScene:
 
 func set_heart_mode(enabled: bool) -> void:
 	_heart_mode = enabled
+	var music := get_node_or_null("BackgroundMusic") as AudioStreamPlayer
+	if music != null:
+		if enabled:
+			if not music.playing:
+				music.play()
+		else:
+			music.stop()
 	$GroundTiles.visible = not enabled
 	$CanvasLayer/HeartModeBackground.visible = enabled
 	$Player/HappyBoo/Colorizer.modulate = PLAYER_HEART_MODE_COLOR if enabled else PLAYER_DEFAULT_COLOR
