@@ -7,9 +7,7 @@
 [ext_resource type="TileSet" uid="uid://bukxm16ti3rup" path="res://tiles/emmas_ground_tile.tres" id="7_ground_tiles"]
 [ext_resource type="Script" uid="uid://c77omyj3xdrut" path="res://tiles/arena_floor.gd" id="8_arena_floor"]
 [ext_resource type="Script" uid="uid://cbvflhjiystwv" path="res://trees/arena_border.gd" id="9_arena_border"]
-[ext_resource type="AudioStream" uid="uid://drrn0mdocy88u" path="res://music/nyan_cat_original.ogg" id="10_music"]
 [ext_resource type="Script" uid="uid://bs4xiko41thid" path="res://music/game_music.gd" id="11_music_script"]
-[ext_resource type="Texture2D" path="res://backgrounds/heart_mode_background.png" id="12_heart_background"]
 
 [sub_resource type="Curve2D" id="Curve2D_cp6e5"]
 _data = {
@@ -48,7 +46,6 @@ metadata/_edit_horizontal_guides_ = [-812.0]
 wait_time = 0.3
 
 [node name="BackgroundMusic" type="AudioStreamPlayer" parent="." unique_id=408386901]
-stream = ExtResource("10_music")
 volume_db = -20.0
 script = ExtResource("11_music_script")
 
@@ -216,7 +213,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.28, 0.34, 0.19, 1)
 
-[node name="HeartModeBackground" type="TextureRect" parent="CanvasLayer"]
+[node name="HeartModeBackground" type="TextureRect" parent="CanvasLayer" unique_id=1054737052]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -224,7 +221,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("12_heart_background")
 expand_mode = 1
 stretch_mode = 6
 
