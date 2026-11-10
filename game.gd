@@ -4,6 +4,10 @@ extends Node2D
 @export var item_interval: float = 8.0
 
 const REPLAY_COUNTDOWN_SECONDS: int = 10
+const MONSTERS_PER_WEAPON_DROP: int = 5
+const WEAPON_PICKUP_SCENE = preload("res://weapon_pickup.tscn")
+const WEAPON_CATALOG = preload("res://weapon_catalog.gd")
+const WEAPON_DROP_ORDER := ["red_ice_pistol", "pink_bow", "blue_pistol"]
 const WEAPON_CHOICE_SECONDS: float = 5.0
 const DEFAULT_WEAPON_TEXTURE := "res://pistol/pistol.png"
 const ALT_WEAPON_TEXTURE := "res://heavy_weapon.png"
@@ -19,6 +23,8 @@ const BASE_MAX_ENEMIES := 15
 const ENEMIES_PER_LEVEL := 10
 
 var _item_timer: float = 0.0
+var _green_monsters_defeated: int = 0
+var _weapon_drops: int = 0
 var _weapon_seconds_remaining: float = WEAPON_CHOICE_SECONDS
 var _weapon_choice_open := true
 var _replay_seconds_remaining: int = 0
@@ -242,6 +248,8 @@ func spawn_mob():
 	if is_boss and _has_active_boss():
 		return
 	var new_mob := scene.instantiate() as Node2D
+	if new_mob.has_signal("green_monster_died"):
+		new_mob.connect("green_monster_died", _on_green_monster_died)
 	new_mob.global_position = _clamp_to_arena(%PathFollow2D.global_position)
 	new_mob.tree_exited.connect(_on_enemy_removed)
 	new_mob.add_to_group("enemies")
@@ -256,6 +264,20 @@ func spawn_mob():
 	if new_mob.has_signal("died"):
 		new_mob.connect("died", Callable(get_node("Player"), "gain_experience"))
 		new_mob.connect("died", _on_enemy_died.bind(new_mob))
+
+
+func _on_green_monster_died(death_position: Vector2) -> void:
+	_green_monsters_defeated += 1
+	if _green_monsters_defeated % MONSTERS_PER_WEAPON_DROP != 0:
+		return
+
+	var weapon_id: String = WEAPON_DROP_ORDER[_weapon_drops % WEAPON_DROP_ORDER.size()]
+	var weapon: Dictionary = WEAPON_CATALOG.get_weapon(weapon_id)
+	_weapon_drops += 1
+	var pickup = WEAPON_PICKUP_SCENE.instantiate()
+	pickup.call("configure", weapon)
+	pickup.global_position = death_position
+	call_deferred("add_child", pickup)
 
 
 func spawn_heart_hit_effect(enemy: Node2D) -> void:

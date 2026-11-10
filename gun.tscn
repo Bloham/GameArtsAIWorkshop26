@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bhbi365xsk225" path="res://gun.gd" id="1_sluxj"]
 [ext_resource type="Texture2D" uid="uid://cswb5do8rrj7q" path="res://pistol/pistol.png" id="2_idur6"]
 [ext_resource type="Texture2D" path="res://pistol/heart_mode_wand.png" id="3_heart_wand"]
+[ext_resource type="Script" path="res://weapon_visual.gd" id="4_weapon_visual"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nthgb"]
 radius = 987.0
@@ -39,6 +40,11 @@ unique_name_in_owner = true
 show_behind_parent = true
 position = Vector2(51, -11)
 gizmo_extents = 30.6
+
+[node name="WeaponVisual" type="Node2D" parent="WeaponPivot"]
+unique_name_in_owner = true
+visible = false
+script = ExtResource("4_weapon_visual")
 
 [node name="Timer" type="Timer" parent="." unique_id=633816227]
 unique_name_in_owner = true

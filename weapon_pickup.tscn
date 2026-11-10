@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://weapon_pickup.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://pistol/pistol.png" id="2_pistol"]
+[ext_resource type="Script" path="res://weapon_visual.gd" id="3_weapon_visual"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pickup"]
+radius = 48.0
+
+[node name="WeaponPickup" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="WeaponSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_pistol")
+scale = Vector2(0.7, 0.7)
+
+[node name="BowVisual" type="Node2D" parent="."]
+visible = false
+scale = Vector2(0.7, 0.7)
+script = ExtResource("3_weapon_visual")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pickup")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

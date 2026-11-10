@@ -93,6 +93,11 @@ func take_damage(amount: float) -> void:
 		health_depleted.emit()
 
 
+## Replaces the current gun when the player collects a weapon pickup.
+func equip_weapon(weapon: Dictionary) -> void:
+	get_node("Gun").call("equip_weapon", weapon)
+
+
 func _physics_process(delta):
 	if _speed_boost_time_remaining > 0.0:
 		_speed_boost_time_remaining = maxf(_speed_boost_time_remaining - delta, 0.0)
